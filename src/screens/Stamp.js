@@ -20,6 +20,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import SingleHeader from "../components/SingleHeader";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import QRCode from "react-native-qrcode-generator";
 import * as Permissions from "expo-permissions";
 const WIDTH = Dimensions.get("screen").width;
 
@@ -31,6 +32,7 @@ export default class Stamp extends React.Component {
       isSecure: true,
       hasCameraPermission: null,
       lastScannedUrl: null,
+      isUser: false,
     };
   }
 
@@ -90,23 +92,34 @@ export default class Stamp extends React.Component {
               </View>
             ))}
           </View>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-            {this.state.hasCameraPermission === null ? (
-              <Text>Requesting for camera permission</Text>
-            ) : this.state.hasCameraPermission === false ? (
-              <Text style={{ color: "#fff" }}>
-                Camera permission is not granted
-              </Text>
-            ) : (
-              <BarCodeScanner
-                onBarCodeRead={this._handleBarCodeRead}
-                style={{
-                  height: WIDTH / 1.4,
-                  width: WIDTH / 1.4,
-                }}
+          {this.state.isUser ? (
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              {this.state.hasCameraPermission === null ? (
+                <Text>Requesting for camera permission</Text>
+              ) : this.state.hasCameraPermission === false ? (
+                <Text style={{ color: "#fff" }}>
+                  Camera permission is not granted
+                </Text>
+              ) : (
+                <BarCodeScanner
+                  onBarCodeRead={this._handleBarCodeRead}
+                  style={{
+                    height: WIDTH / 1.4,
+                    width: WIDTH / 1.4,
+                  }}
+                />
+              )}
+            </View>
+          ) : (
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <QRCode
+                value={"Anjum is going to Andrease premium resturant"}
+                size={200}
+                bgColor="black"
+                fgColor="white"
               />
-            )}
-          </View>
+            </View>
+          )}
           <Text>{this.state.lastScannedUrl && this.state.lastScannedUrl}</Text>
           <View style={{ paddingHorizontal: 20 }}>
             <TouchableOpacity

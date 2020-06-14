@@ -17,6 +17,7 @@ import { Marker } from "react-native-maps";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import MyCustomMarkerView from "../components/MyCustomMarkerView";
 import { Callout } from "react-native-maps";
+import { ActivityIndicator } from "react-native-paper";
 console.disableYellowBox = true;
 
 export default class App extends React.Component {
@@ -66,7 +67,7 @@ export default class App extends React.Component {
   render() {
     var myArr = [1, 2, 3, 4, 5, 6, 7];
     var filters = ["All", "Fast Food", "Beverages", "Hotel", "Steaks"];
-    return (
+    return this.state.region ? (
       <>
         <View style={styles.container}>
           <MyHeader navigation={this.props.navigation} />
@@ -306,6 +307,10 @@ export default class App extends React.Component {
           </View>
         </View>
       </>
+    ) : (
+      <View style={styles.container}>
+        <ActivityIndicator size={"large"} color="black" />
+      </View>
     );
   }
 }
