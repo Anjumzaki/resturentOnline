@@ -7,7 +7,7 @@ import {
 import { View, Image, Text } from "react-native";
 import LatoText from "../components/LatoText";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
-
+import { SimpleLineIcons } from "@expo/vector-icons";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 // function CustomDrawerContent(props)
@@ -70,8 +70,64 @@ export default class CustomDrawerContent extends Component {
             />
           </View>
         </TouchableOpacity>
-        <View></View>
         <DrawerItemList style={{ backgroundColor: "white" }} {...this.props} />
+        <View
+          style={{
+            borderTopColor: "silver",
+            borderTopWidth: 1,
+            marginVertical: 40,
+          }}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingLeft: 18,
+            paddingVertical: 12,
+          }}
+        >
+          <MaterialCommunityIcons
+            style={{ paddingRight: 30 }}
+            name="security"
+            size={26}
+            color="#707070"
+          />
+          <Text style={{ fontWeight: "700", color: "#707070" }}>
+            Privacy Policy
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingLeft: 18,
+            paddingVertical: 12,
+          }}
+        >
+          <MaterialCommunityIcons
+            style={{ paddingRight: 30 }}
+            name="star"
+            size={26}
+            color="#707070"
+          />
+          <Text style={{ fontWeight: "700", color: "#707070" }}>Rate Us</Text>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingLeft: 18,
+            paddingVertical: 12,
+          }}
+        >
+          <SimpleLineIcons
+            style={{ paddingRight: 30 }}
+            name="logout"
+            size={26}
+            color="#707070"
+          />
+          <Text style={{ fontWeight: "700", color: "#707070" }}>Logout</Text>
+        </View>
       </DrawerContentScrollView>
     );
   }

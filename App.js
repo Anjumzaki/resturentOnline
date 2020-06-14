@@ -9,11 +9,15 @@ import ForgotPass from "./src/screens/ForgotPass";
 import Home from "./src/screens/Home";
 import Profile from "./src/screens/Profile";
 import Stamp from "./src/screens/Stamp";
+import News from "./src/screens/News";
+import { Ionicons } from "@expo/vector-icons";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import CustomDrawerContent from "./src/components/CustomDrawerContent";
 import { AntDesign } from "@expo/vector-icons";
+import CreateResturant from "./src/screens/CreateResturant";
+
 const Stack = createStackNavigator();
 
 function LoginAuth() {
@@ -34,9 +38,15 @@ const HomeRoutes = createStackNavigator();
 function HomeSreen() {
   return (
     <HomeRoutes.Navigator headerMode="none">
-      <HomeRoutes.Screen name="Home" component={Home} />
+      <HomeRoutes.Screen
+        name="Home"
+        options={{ title: "Resturants" }}
+        component={Home}
+      />
       <HomeRoutes.Screen name="Profile" component={Profile} />
-      <HomeRoutes.Screen  name="Stempelkarte" component={Stamp} />
+      <HomeRoutes.Screen name="Stempelkarte" component={Stamp} />
+      <HomeRoutes.Screen name="News" component={News} />
+      <HomeRoutes.Screen name="Create Resturant" component={CreateResturant} />
     </HomeRoutes.Navigator>
   );
 }
@@ -72,7 +82,11 @@ const TabsScreen = () => (
       inactiveTintColor: "#707070",
     }}
   >
-    <Tabs.Screen name="Home" component={HomeSreen} />
+    <Tabs.Screen
+      name="Home"
+      options={{ title: "Resturants" }}
+      component={HomeSreen}
+    />
     <Tabs.Screen name="Profile" component={Profile} />
   </Tabs.Navigator>
 );
@@ -136,10 +150,26 @@ const DrawerScreen = () => (
               color={focused ? "#707070" : "#707070"}
             />
           );
-        } else if (route.name === "Share") {
+        } else if (route.name === "News") {
           return (
             <Entypo
-              name="Home"
+              name="news"
+              size={26}
+              color={focused ? "#707070" : "#707070"}
+            />
+          );
+        } else if (route.name === "Create Resturant") {
+          return (
+            <MaterialCommunityIcons
+              name="chef-hat"
+              size={26}
+              color={focused ? "#707070" : "#707070"}
+            />
+          );
+        } else if (route.name === "Terms & Conditions") {
+          return (
+            <Ionicons
+              name="ios-paper"
               size={26}
               color={focused ? "#707070" : "#707070"}
             />
@@ -148,8 +178,15 @@ const DrawerScreen = () => (
       },
     })}
   >
-    <Drawer.Screen name="Home" component={TabsScreen} />
+    <Drawer.Screen
+      name="Home"
+      options={{ title: "Resturants" }}
+      component={TabsScreen}
+    />
+    <Drawer.Screen name="News" component={News} />
+    <Drawer.Screen name="Create Resturant" component={CreateResturant} />
     <Drawer.Screen name="Stempelkarte" component={Stamp} />
+    <Drawer.Screen name="Terms & Conditions" component={TabsScreen} />
   </Drawer.Navigator>
 );
 const RootStack = createStackNavigator();

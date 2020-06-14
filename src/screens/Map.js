@@ -24,6 +24,7 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Geocoder from "react-native-geocoding";
+
 console.disableYellowBox = true;
 
 class Map extends Component {
@@ -32,8 +33,8 @@ class Map extends Component {
     this.state = {
       loading: true,
       region: {
-        latitude: 10,
-        longitude: 10,
+        latitude: 40.0583,
+        longitude: 74.4057,
         latitudeDelta: 0.001,
         longitudeDelta: 0.001,
       },
