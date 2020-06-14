@@ -80,12 +80,7 @@ export default class Stamp extends React.Component {
           nameTitle="Create Resturant"
           navigation={this.props.navigation}
         />
-        <ScrollView
-          nestedScrollEnabled={true}
-          contentContainerStyle={{
-            flex: 1,
-          }}
-        >
+        <ScrollView nestedScrollEnabled={true}>
           {this.state.image ? (
             <Image
               style={{ width: "100%", height: 200 }}
@@ -185,14 +180,15 @@ export default class Stamp extends React.Component {
                 }}
               />
             </View>
-              <View style={{ marginVertical: 10 }}>
-                <LatoText
-                  fontName="robo"
-                  col="black"
-                  fonSiz={16}
-                  text={"Address"}
-                />
-              </View>
+            <View style={{ marginVertical: 10 }}>
+              <LatoText
+                fontName="robo"
+                col="black"
+                fonSiz={16}
+                text={"Address"}
+              />
+            </View>
+            <View style={{ height: 300 }}>
               <GooglePlacesAutocomplete
                 styles={{
                   powered: {
@@ -235,12 +231,11 @@ export default class Stamp extends React.Component {
                   key: "AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI",
                   language: "en",
                 }}
-                onPress={(data, details = null) => {
-                  // 'details' is provided when fetchDetails = true
-                  console.log(data, details);
+                onPress={(data, details) => {
+                  this.setState({ location: details.description });
                 }}
-                isRowScrollable={false}
               />
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
