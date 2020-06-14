@@ -22,6 +22,7 @@ import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import SingleHeader from "../components/SingleHeader";
 import * as ImagePicker from "expo-image-picker";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import RNPickerSelect from "react-native-picker-select";
 
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
@@ -80,7 +81,10 @@ export default class Stamp extends React.Component {
           nameTitle="Create Resturant"
           navigation={this.props.navigation}
         />
-        <ScrollView nestedScrollEnabled={true}>
+        <ScrollView
+          keyboardShouldPersistTaps="always"
+          listViewDisplayed={false}
+        >
           {this.state.image ? (
             <Image
               style={{ width: "100%", height: 200 }}
@@ -116,20 +120,52 @@ export default class Stamp extends React.Component {
                 }}
               />
             </View>
+            <View style={{ marginVertical: 10 }}>
+              <LatoText
+                fontName="robo"
+                col="black"
+                fonSiz={16}
+                text={"Category"}
+              />
+            </View>
+            <View
+              style={{
+                backgroundColor: "#EFF3F4",
+                borderRadius: 10,
+              }}
+            >
+              <RNPickerSelect
+                style={{
+                  viewContainer: {
+                    padding: 15,
+                  },
+                }}
+                onValueChange={(category) => this.setState({ category })}
+                items={[
+                  { label: "All", value: "All" },
+                  { label: "Fast Food", value: "Fast Food" },
+                  { label: "Beverages", value: "Beverages" },
+                  { label: "Hotel", value: "Hotel" },
+                  { label: "Steaks", value: "Steaks" },
+                ]}
+              />
+            </View>
+
             <View>
               <View style={{ marginVertical: 10 }}>
                 <LatoText
                   fontName="robo"
                   col="black"
                   fonSiz={16}
-                  text={"Category"}
+                  text={"Phone Number"}
                 />
               </View>
               <TextInput
-                placeholder={"Category Name"}
-                onChangeText={(category) => this.setState(category)}
+                placeholder={"+874 232 32432 "}
+                onChangeText={(phone) => this.setState(phone)}
                 autoCapitalize={"none"}
-                value={this.state.category}
+                value={this.state.phone}
+                keyboardType="phone-pad"
                 style={{
                   padding: 15,
                   backgroundColor: "#EFF3F4",
@@ -143,11 +179,33 @@ export default class Stamp extends React.Component {
                   fontName="robo"
                   col="black"
                   fonSiz={16}
-                  text={"Phone Number"}
+                  text={"Stemp Price $"}
                 />
               </View>
               <TextInput
-                placeholder={"+874 232 32432 "}
+                placeholder={"eg. 20"}
+                onChangeText={(phone) => this.setState(phone)}
+                autoCapitalize={"none"}
+                value={this.state.phone}
+                keyboardType="phone-pad"
+                style={{
+                  padding: 15,
+                  backgroundColor: "#EFF3F4",
+                  borderRadius: 10,
+                }}
+              />
+            </View>
+            <View>
+              <View style={{ marginVertical: 10 }}>
+                <LatoText
+                  fontName="robo"
+                  col="black"
+                  fonSiz={16}
+                  text={"Invite code"}
+                />
+              </View>
+              <TextInput
+                placeholder={"eg. 123456"}
                 onChangeText={(phone) => this.setState(phone)}
                 autoCapitalize={"none"}
                 value={this.state.phone}
@@ -188,7 +246,7 @@ export default class Stamp extends React.Component {
                 text={"Address"}
               />
             </View>
-            <View style={{ height: 300 }}>
+            <View>
               <GooglePlacesAutocomplete
                 styles={{
                   powered: {

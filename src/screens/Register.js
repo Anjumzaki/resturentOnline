@@ -15,6 +15,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
+import RNPickerSelect from "react-native-picker-select";
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 export default class Register extends React.Component {
@@ -22,6 +23,7 @@ export default class Register extends React.Component {
     super(props);
     this.state = {
       isSecure: true,
+      userType: "Select Type",
     };
   }
 
@@ -109,7 +111,7 @@ export default class Register extends React.Component {
                 <TextInput
                   autoCapitalize={"none"}
                   style={inStyles.innerFeild}
-                  keyboardType={'number-pad'}
+                  keyboardType={"number-pad"}
                 />
                 <MaterialCommunityIcons
                   style={inStyles.inputIcon}
@@ -130,7 +132,7 @@ export default class Register extends React.Component {
                 <TextInput
                   autoCapitalize={"none"}
                   style={inStyles.innerFeild}
-                  keyboardType={'email-address'}
+                  keyboardType={"email-address"}
                 />
                 <MaterialCommunityIcons
                   style={inStyles.inputIcon}
@@ -180,6 +182,41 @@ export default class Register extends React.Component {
                   )}
                 </TouchableHighlight>
               </View>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: "black",
+                  marginVertical: 5,
+                  marginBottom: 20,
+                }}
+              >
+                <View
+                  style={[
+                    inStyles.upperText,
+                    { top: -8, backgroundColor: "white" },
+                  ]}
+                >
+                  <LatoText
+                    fontName="robo"
+                    col="black"
+                    fonSiz={12}
+                    text={"Type"}
+                  />
+                </View>
+                <RNPickerSelect
+                  style={{
+                    viewContainer: {
+                      padding: 13,
+                    },
+                  }}
+                  onValueChange={(userType) => this.setState({ userType })}
+                  items={[
+                    { label: "Owner", value: "Owner" },
+                    { label: "User", value: "User" },
+                  ]}
+                />
+              </View>
+
               <TouchableOpacity style={btnStyles.basic}>
                 <LatoText
                   fontName="robo"
@@ -188,7 +225,6 @@ export default class Register extends React.Component {
                   text={"Register"}
                 />
               </TouchableOpacity>
-              
             </View>
             <View style={{ justifyContent: "center" }}>
               <View style={{ alignItems: "center", paddingVertical: 10 }}>
@@ -200,7 +236,10 @@ export default class Register extends React.Component {
                 />
               </View>
 
-              <TouchableOpacity onPress={()=>this.props.navigation.push('Login')} style={btnStyles.basic}>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.push("Login")}
+                style={btnStyles.basic}
+              >
                 <LatoText
                   fontName="robo"
                   col="white"

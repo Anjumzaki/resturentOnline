@@ -39,6 +39,7 @@ export default class CustomDrawerContent extends Component {
             backgroundColor: "#5072B1",
             paddingTop: getStatusBarHeight() + 20,
           }}
+          onPress={()=>this.props.navigation.navigate('Profile')}
         >
           <View>
             {this.state.image != "" && (
