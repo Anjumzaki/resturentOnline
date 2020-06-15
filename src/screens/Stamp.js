@@ -10,6 +10,7 @@ import {
   Linking,
   LayoutAnimation,
   Alert,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { conStyles, inStyles, btnStyles } from "../styles/styles";
@@ -20,10 +21,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import SingleHeader from "../components/SingleHeader";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import QRCode from "react-native-qrcode-generator";
 import * as Permissions from "expo-permissions";
 const WIDTH = Dimensions.get("screen").width;
-
 const HEIGHT = Dimensions.get("screen").height;
 export default class Stamp extends React.Component {
   constructor(props) {
@@ -32,7 +31,7 @@ export default class Stamp extends React.Component {
       isSecure: true,
       hasCameraPermission: null,
       lastScannedUrl: null,
-      isUser: false,
+      isUser: true,
     };
   }
 
@@ -46,11 +45,12 @@ export default class Stamp extends React.Component {
       hasCameraPermission: status === "granted",
     });
   };
-  _handleBarCodeRead = (result) => {
+  handleBarCodeScanned = (result) => {
     if (result.data !== this.state.lastScannedUrl) {
       LayoutAnimation.spring();
       this.setState({ lastScannedUrl: result.data });
     }
+    alert("asdas");
   };
 
   render() {
@@ -80,8 +80,8 @@ export default class Stamp extends React.Component {
                 <View
                   key={index}
                   style={{
-                    width: WIDTH / 3 - 20,
-                    height: WIDTH / 3 - 20,
+                    width: WIDTH / 4 - 20,
+                    height: WIDTH / 4 - 20,
                     justifyContent: "center",
                     alignItems: "center",
                   }}
@@ -95,7 +95,12 @@ export default class Stamp extends React.Component {
             </View>
           )}
           {this.state.isUser ? (
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               {this.state.hasCameraPermission === null ? (
                 <Text>Requesting for camera permission</Text>
               ) : this.state.hasCameraPermission === false ? (
@@ -104,11 +109,8 @@ export default class Stamp extends React.Component {
                 </Text>
               ) : (
                 <BarCodeScanner
-                  onBarCodeRead={this._handleBarCodeRead}
-                  style={{
-                    height: WIDTH / 1.4,
-                    width: WIDTH / 1.4,
-                  }}
+                  onBarCodeScanned={this.handleBarCodeScanned}
+                  style={{ width: "150%", height: "100%" }}
                 />
               )}
             </View>
@@ -140,7 +142,7 @@ export default class Stamp extends React.Component {
           <View style={{ paddingHorizontal: 20 }}>
             <TouchableOpacity
               // onPress={() => this.props.navigation.push("App")}
-              style={btnStyles.basic}
+              style={[btnStyles.basic, { position: "absolute", bottom: 10 }]}
             >
               <LatoText
                 fontName="robo"
