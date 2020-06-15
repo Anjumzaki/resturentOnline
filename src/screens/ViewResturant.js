@@ -25,6 +25,7 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import RNPickerSelect from "react-native-picker-select";
 import axios from "axios";
 import Geocoder from "react-native-geocoding";
+import FullResturantImage from '../components/FullResturantImage'
 import firebase from "firebase";
 Geocoder.init("AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI");
 const WIDTH = Dimensions.get("screen").width;
@@ -63,6 +64,16 @@ export default class Stamp extends React.Component {
   }
 
   componentDidMount() {
+    // alert(JSON.stringify(this.props.route.params.item));
+    const rest = this.props.route.params.item;
+    this.setState({
+      name: rest.name,
+      category: rest.category,
+      price: rest.stempPrice,
+      description: rest.description,
+      location: rest.address,
+      phone: rest.phoneNumber,
+    });
     // this._requestCameraPermission();
   }
 
@@ -73,26 +84,14 @@ export default class Stamp extends React.Component {
       <SafeAreaView style={conStyles.safeAreaMy}>
         <StatusBar translucent={true} backgroundColor="transparent" />
         <SingleHeader
-          nameTitle="Create Resturant"
+          nameTitle="View Resturant"
           navigation={this.props.navigation}
         />
         <ScrollView
           keyboardShouldPersistTaps="always"
           listViewDisplayed={false}
         >
-          {this.state.image ? (
-            <Image
-              style={{ width: "100%", height: 200 }}
-              source={{ uri: this.state.image }}
-            />
-          ) : (
-            <TouchableOpacity>
-              <Image
-                style={{ width: "100%", height: 200 }}
-                source={require("../assets/restu.png")}
-              />
-            </TouchableOpacity>
-          )}
+          <FullResturantImage id={this.props.route.params.item._id}/>
           <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
             <View>
               <View
@@ -129,6 +128,7 @@ export default class Stamp extends React.Component {
                   backgroundColor: "#EFF3F4",
                   borderRadius: 10,
                 }}
+                editable={false}
               />
             </View>
             <View
@@ -160,22 +160,15 @@ export default class Stamp extends React.Component {
                 borderRadius: 10,
               }}
             >
-              <RNPickerSelect
+              <TextInput
+                autoCapitalize={"none"}
+                value={this.state.category}
                 style={{
-                  viewContainer: {
-                    padding: 15,
-                  },
+                  padding: 15,
+                  backgroundColor: "#EFF3F4",
+                  borderRadius: 10,
                 }}
-                onValueChange={(category) =>
-                  this.setState({ category, categoryError: false })
-                }
-                items={[
-                  { label: "All", value: "All" },
-                  { label: "Fast Food", value: "Fast Food" },
-                  { label: "Beverages", value: "Beverages" },
-                  { label: "Hotel", value: "Hotel" },
-                  { label: "Steaks", value: "Steaks" },
-                ]}
+                editable={false}
               />
             </View>
 
@@ -216,6 +209,7 @@ export default class Stamp extends React.Component {
                   backgroundColor: "#EFF3F4",
                   borderRadius: 10,
                 }}
+                editable={false}
               />
             </View>
             <View>
@@ -254,46 +248,10 @@ export default class Stamp extends React.Component {
                   backgroundColor: "#EFF3F4",
                   borderRadius: 10,
                 }}
+                editable={false}
               />
             </View>
-            <View>
-              <View
-                style={{
-                  marginVertical: 10,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <LatoText
-                  fontName="robo"
-                  col="black"
-                  fonSiz={16}
-                  text={"Invite code"}
-                />
-                {this.state.codeError && (
-                  <LatoText
-                    fontName="robo"
-                    col="red"
-                    fonSiz={16}
-                    text={"Please add invite code"}
-                  />
-                )}
-              </View>
-              <TextInput
-                placeholder={"eg. 123456"}
-                onChangeText={(code) =>
-                  this.setState({ code, codeError: false })
-                }
-                autoCapitalize={"none"}
-                value={this.state.code}
-                keyboardType="phone-pad"
-                style={{
-                  padding: 15,
-                  backgroundColor: "#EFF3F4",
-                  borderRadius: 10,
-                }}
-              />
-            </View>
+
             <View>
               <View
                 style={{
@@ -330,6 +288,7 @@ export default class Stamp extends React.Component {
                   backgroundColor: "#EFF3F4",
                   borderRadius: 10,
                 }}
+                editable={false}
               />
             </View>
             <View
@@ -356,106 +315,17 @@ export default class Stamp extends React.Component {
             </View>
 
             <View>
-              <GooglePlacesAutocomplete
-                styles={{
-                  powered: {
-                    display: "none",
-                  },
-                  textInputContainer: {
-                    backgroundColor: "rgba(0,0,0,0)",
-                    borderTopWidth: 0,
-                    borderBottomWidth: 0,
-                    backgroundColor: "#EFF3F4",
-                    fontSize: 20,
-                  },
-                  textInput: {
-                    marginLeft: 0,
-                    marginRight: 0,
-                    height: 38,
-                    fontSize: 16,
-                    backgroundColor: "#EFF3F4",
-                  },
-                  predefinedPlacesDescription: {
-                    color: "#1faadb",
-                  },
-                  listView: {
-                    color: "white",
-                    backgroundColor: "white",
-                    paddingHorizontal: 20,
-                    marginBottom: -20,
-                    marginTop: 20,
-                  },
-                  poweredContainer: {
-                    display: "none",
-                  },
-                }}
-                listUnderlayColor="green"
-                placeholder="Search locations here"
-                autoFocus={false}
-                returnKeyType={"default"}
-                fetchDetails={true}
-                query={{
-                  key: "AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI",
-                  language: "en",
-                }}
-                onPress={(details) => {
-                  this.setState({
-                    location: details.description,
-                    locationError: false,
-                  });
-                }}
-              />
-            </View>
-            <View>
-              <View
+              <TextInput
+                placeholder={"Description about Restaurant"}
+                autoCapitalize={"none"}
+                value={this.state.location}
                 style={{
-                  marginVertical: 10,
-
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  padding: 15,
+                  backgroundColor: "#EFF3F4",
+                  borderRadius: 10,
                 }}
-              >
-                <View style={{ paddingVertical: 10 }}>
-                  <LatoText
-                    fontName="robo"
-                    col="black"
-                    fonSiz={16}
-                    text={"Upload Menu"}
-                  />
-                </View>
-                {this.state.menu ? (
-                  <View style={{ paddingHorizontal: 20, paddingVertical: 20 }}>
-                    <MaterialIcons name="done" size={24} color="green" />
-                  </View>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => this.pickUpload()}
-                    style={{ paddingHorizontal: 20, paddingVertical: 20 }}
-                  >
-                    <FontAwesome5 name="upload" size={24} color="black" />
-                  </TouchableOpacity>
-                )}
-              </View>
-            </View>
-            <Text style={{ textAlign: "center", color: "red", marginTop: 10 }}>
-              {this.state.msg}
-            </Text>
-            <Text style={{ textAlign: "center", color: "green" }}>
-              {this.state.msg1}
-            </Text>
-
-            <View style={{ justifyContent: "center", marginTop: 20 }}>
-              <TouchableOpacity
-                onPress={() => this.handleSubmission()}
-                style={btnStyles.basic}
-              >
-                <LatoText
-                  fontName="robo"
-                  col="white"
-                  fonSiz={14}
-                  text={"Create"}
-                />
-              </TouchableOpacity>
+                editable={false}
+              />
             </View>
           </View>
         </ScrollView>
