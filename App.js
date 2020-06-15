@@ -17,7 +17,9 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import CustomDrawerContent from "./src/components/CustomDrawerContent";
 import { AntDesign } from "@expo/vector-icons";
 import CreateResturant from "./src/screens/CreateResturant";
-
+import store from "./src/store";
+import { Provider as StoreProvider } from "react-redux";
+import Fire from './src/config/Fire'
 const Stack = createStackNavigator();
 
 function LoginAuth() {
@@ -211,8 +213,10 @@ const RootStackScreen = ({ userToken }) => (
 );
 export default function App() {
   return (
-    <NavigationContainer>
-      <RootStackScreen />
-    </NavigationContainer>
+    <StoreProvider store={store}>
+      <NavigationContainer>
+        <RootStackScreen />
+      </NavigationContainer>
+    </StoreProvider>
   );
 }

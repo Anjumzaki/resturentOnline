@@ -17,10 +17,15 @@ import { Marker } from "react-native-maps";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import MyCustomMarkerView from "../components/MyCustomMarkerView";
 import { Callout } from "react-native-maps";
+import { bindActionCreators } from "redux";
+import { userAsync } from "../store/actions";
+import { connect } from "react-redux";
 import { ActivityIndicator } from "react-native-paper";
+import axios from "axios";
+import RestaurentImage from '../components/RestaurentImage'
 console.disableYellowBox = true;
 
-export default class App extends React.Component {
+ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,9 +42,11 @@ export default class App extends React.Component {
         longitudeDelta: 0.0421,
       },
       categ: 0,
+      restaurents: []
     };
   }
   async componentDidMount() {
+    console.log("redux data", this.props.user)
     let { status } = await Location.requestPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission to access location was denied");
@@ -48,6 +55,11 @@ export default class App extends React.Component {
     this.setState({
       location,
     });
+
+
+    axios.get('http://192.168.0.108:3000/get/restaurent/')
+    .then(resp => this.setState({restaurents: resp.data}))
+    .catch(err => console.log(err))
   }
   onMyLocation = async () => {
     let region = await Location.getCurrentPositionAsync({});
@@ -265,13 +277,13 @@ export default class App extends React.Component {
                   alignItems: "center",
                 }}
               >
-                {myArr.map((item, index) => (
+                {this.state.restaurents.map((item, index) => (
                   <TouchableOpacity
                     onPress={() =>
                       this.setState({
                         region: {
-                          latitude: 31.4504,
-                          longitude: 73.135,
+                          latitude: item.lat,
+                          longitude: item.lng,
                           latitudeDelta: 0.0922,
                           longitudeDelta: 0.0421,
                         },
@@ -280,24 +292,16 @@ export default class App extends React.Component {
                     key={index}
                     style={styles.card}
                   >
-                    <Image
-                      style={{
-                        width: 220,
-                        height: 140,
-                        borderTopRightRadius: 20,
-                        borderTopRightRadius: 20,
-                      }}
-                      source={require("../assets/1.jpg")}
-                    />
+                  <RestaurentImage id={item._id}/>
                     <View style={{ padding: 5, paddingHorizontal: 10 }}>
                       <LatoText
                         fontName="robo"
                         col="gray"
                         fonSiz={14}
-                        text={"Hotel Andreas Premium"}
+                        text={item.name}
                       />
                       <Text style={{ fontSize: 12, color: "gray" }}>
-                        Some Description you like the most Some Description you
+                        {item.description}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -360,3 +364,21 @@ const styles = StyleSheet.create({
     top: "50%",
   },
 });
+
+const mapStateToProps = state => ({
+  user: state.user.user, 
+  loading: state.user.userLoading,
+  error: state.user.userError
+});
+const mapDispatchToProps = (dispatch, ownProps) =>
+  bindActionCreators(
+      {
+        userAsync
+      },
+      dispatch
+  );
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);

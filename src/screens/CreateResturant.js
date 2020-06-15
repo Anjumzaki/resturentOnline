@@ -23,7 +23,10 @@ import SingleHeader from "../components/SingleHeader";
 import * as ImagePicker from "expo-image-picker";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import RNPickerSelect from "react-native-picker-select";
-
+import axios from "axios";
+import Geocoder from 'react-native-geocoding';
+import firebase from "firebase"
+Geocoder.init("AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI"); 
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 const options = {
@@ -54,6 +57,7 @@ export default class Stamp extends React.Component {
       codeError: false,
       descriptionError: false,
       locationError: false,
+      msg: ""
     };
   }
 
@@ -86,7 +90,8 @@ export default class Stamp extends React.Component {
       });
     }
   };
-  handleSubmission = () => {
+  handleSubmission(){
+    console.log("SDDDDDDDDDDDDDDDDDD")
     this.setState({ loading: true }, () => {
       if (this.state.name.trim()) {
         if (this.state.category.trim()) {
@@ -95,12 +100,73 @@ export default class Stamp extends React.Component {
               if (this.state.code.trim()) {
                 if (this.state.description.trim()) {
                   if (this.state.location) {
-                    this.setState(
-                      {
-                        loading: false,
-                      },
-                      alert("done")
-                    );
+
+                    Geocoder.from(this.state.location)
+                      .then((json) => {
+                        var location = json.results[0].geometry.location;
+                        console.log("SDLOC",location)
+                        // let region = {
+                        //   latitude: location.lat,
+                        //   longitude: location.lng,
+                        //   latitudeDelta: 0.007,
+                        //   longitudeDelta: 0.007,
+                        // };
+                        
+                        axios.get('http://192.168.0.108:3000/get/inviteCode/'+this.state.code)
+                        .then(resp => {
+                          console.log(resp.data)
+                          if(resp.data !== null){
+                              axios.post('http://192.168.0.108:3000/add/restaurent',{
+                                name:  this.state.name,
+                                category: this.state.category,
+                                phoneNumber: this.state.phone,
+                                stempPrice: this.state.price,
+                                inviteCode: this.state.code,
+                                description: this.state.description,
+                                address: this.state.location,
+                                lat: location.lat,
+                                lng: location.lng
+                              })
+                              .then(async resp => {
+                                  console.log(resp.data)
+                                  const response = await fetch(this.state.image);
+                                  const blob = await response.blob();
+                                  var ref = firebase
+                                    .storage()
+                                    .ref()
+                                    .child("restaurent_images/" +resp.data.restaurent._id + ".jpg");
+                                  return ref.put(blob);
+
+                                 
+                                
+                              })
+                              .catch(err => console.log(err))
+                              this.setState({
+                                msg1: "Restaurent added Successfully",
+                                name: "",
+                                category: "",
+                                price: "",
+                                code: "",
+                                description: "",
+                                location: "",
+                                phone: "",
+                              })
+                          }else{
+                            this.setState({msg: "Invalid Invite Code!"})
+                          }
+                        })
+
+                      })
+                      .catch((error) => console.warn(error));
+              
+
+                   
+                    // this.setState(
+                    //   {
+                    //     loading: false,
+                    //   },
+                    //   alert("done")
+                    // );
                   } else {
                     this.setState({
                       locationError: true,
@@ -146,6 +212,7 @@ export default class Stamp extends React.Component {
     });
   };
   render() {
+    console.log(this.state)
     var array = [1, 2, 3, 4, 5];
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
@@ -476,14 +543,18 @@ export default class Stamp extends React.Component {
                   key: "AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI",
                   language: "en",
                 }}
-                onPress={(data, details) => {
+                onPress={(details) => {
                   this.setState({
-                    location: details,
+                    location: details.description,
                     locationError: false,
                   });
                 }}
               />
             </View>
+            <Text style={{textAlign: "center", color: "red"}}>{this.state.msg}</Text>
+            <Text style={{textAlign: "center", color: "green"}}>{this.state.msg1}</Text>
+
+
             <View style={{ justifyContent: "center", marginTop: 20 }}>
               <TouchableOpacity
                 onPress={() => this.handleSubmission()}
