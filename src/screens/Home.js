@@ -20,6 +20,9 @@ import { Callout } from "react-native-maps";
 import { bindActionCreators } from "redux";
 import { userAsync } from "../store/actions";
 import { connect } from "react-redux";
+import { ActivityIndicator } from "react-native-paper";
+import axios from "axios";
+import RestaurentImage from '../components/RestaurentImage'
 console.disableYellowBox = true;
 
  class App extends React.Component {
@@ -39,6 +42,7 @@ console.disableYellowBox = true;
         longitudeDelta: 0.0421,
       },
       categ: 0,
+      restaurents: []
     };
   }
   async componentDidMount() {
@@ -51,6 +55,11 @@ console.disableYellowBox = true;
     this.setState({
       location,
     });
+
+
+    axios.get('http://192.168.0.108:3000/get/restaurent/')
+    .then(resp => this.setState({restaurents: resp.data}))
+    .catch(err => console.log(err))
   }
   onMyLocation = async () => {
     let region = await Location.getCurrentPositionAsync({});
@@ -70,7 +79,7 @@ console.disableYellowBox = true;
   render() {
     var myArr = [1, 2, 3, 4, 5, 6, 7];
     var filters = ["All", "Fast Food", "Beverages", "Hotel", "Steaks"];
-    return (
+    return this.state.region ? (
       <>
         <View style={styles.container}>
           <MyHeader navigation={this.props.navigation} />
@@ -268,13 +277,13 @@ console.disableYellowBox = true;
                   alignItems: "center",
                 }}
               >
-                {myArr.map((item, index) => (
+                {this.state.restaurents.map((item, index) => (
                   <TouchableOpacity
                     onPress={() =>
                       this.setState({
                         region: {
-                          latitude: 31.4504,
-                          longitude: 73.135,
+                          latitude: item.lat,
+                          longitude: item.lng,
                           latitudeDelta: 0.0922,
                           longitudeDelta: 0.0421,
                         },
@@ -283,24 +292,16 @@ console.disableYellowBox = true;
                     key={index}
                     style={styles.card}
                   >
-                    <Image
-                      style={{
-                        width: 220,
-                        height: 140,
-                        borderTopRightRadius: 20,
-                        borderTopRightRadius: 20,
-                      }}
-                      source={require("../assets/1.jpg")}
-                    />
+                  <RestaurentImage id={item._id}/>
                     <View style={{ padding: 5, paddingHorizontal: 10 }}>
                       <LatoText
                         fontName="robo"
                         col="gray"
                         fonSiz={14}
-                        text={"Hotel Andreas Premium"}
+                        text={item.name}
                       />
                       <Text style={{ fontSize: 12, color: "gray" }}>
-                        Some Description you like the most Some Description you
+                        {item.description}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -310,6 +311,10 @@ console.disableYellowBox = true;
           </View>
         </View>
       </>
+    ) : (
+      <View style={styles.container}>
+        <ActivityIndicator size={"large"} color="black" />
+      </View>
     );
   }
 }

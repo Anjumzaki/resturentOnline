@@ -19,7 +19,7 @@ import { AntDesign } from "@expo/vector-icons";
 import CreateResturant from "./src/screens/CreateResturant";
 import store from "./src/store";
 import { Provider as StoreProvider } from "react-redux";
-
+import Fire from './src/config/Fire'
 const Stack = createStackNavigator();
 
 function LoginAuth() {
@@ -214,9 +214,9 @@ const RootStackScreen = ({ userToken }) => (
 export default function App() {
   return (
     <StoreProvider store={store}>
-    <NavigationContainer>
-      <RootStackScreen />
-    </NavigationContainer>
+      <NavigationContainer>
+        <RootStackScreen />
+      </NavigationContainer>
     </StoreProvider>
   );
 }

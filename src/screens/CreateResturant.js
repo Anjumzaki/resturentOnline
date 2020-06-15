@@ -23,7 +23,10 @@ import SingleHeader from "../components/SingleHeader";
 import * as ImagePicker from "expo-image-picker";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import RNPickerSelect from "react-native-picker-select";
-
+import axios from "axios";
+import Geocoder from 'react-native-geocoding';
+import firebase from "firebase"
+Geocoder.init("AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI"); 
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 const options = {
@@ -40,6 +43,21 @@ export default class Stamp extends React.Component {
       isSecure: true,
       hasCameraPermission: null,
       lastScannedUrl: null,
+      name: "",
+      category: "",
+      price: "",
+      code: "",
+      description: "",
+      location: "",
+      phone: "",
+      phoneError: false,
+      nameError: false,
+      categoryError: false,
+      priceError: false,
+      codeError: false,
+      descriptionError: false,
+      locationError: false,
+      msg: ""
     };
   }
 
@@ -72,7 +90,129 @@ export default class Stamp extends React.Component {
       });
     }
   };
+  handleSubmission(){
+    console.log("SDDDDDDDDDDDDDDDDDD")
+    this.setState({ loading: true }, () => {
+      if (this.state.name.trim()) {
+        if (this.state.category.trim()) {
+          if (this.state.phone.trim()) {
+            if (this.state.price.trim()) {
+              if (this.state.code.trim()) {
+                if (this.state.description.trim()) {
+                  if (this.state.location) {
+
+                    Geocoder.from(this.state.location)
+                      .then((json) => {
+                        var location = json.results[0].geometry.location;
+                        console.log("SDLOC",location)
+                        // let region = {
+                        //   latitude: location.lat,
+                        //   longitude: location.lng,
+                        //   latitudeDelta: 0.007,
+                        //   longitudeDelta: 0.007,
+                        // };
+                        
+                        axios.get('http://192.168.0.108:3000/get/inviteCode/'+this.state.code)
+                        .then(resp => {
+                          console.log(resp.data)
+                          if(resp.data !== null){
+                              axios.post('http://192.168.0.108:3000/add/restaurent',{
+                                name:  this.state.name,
+                                category: this.state.category,
+                                phoneNumber: this.state.phone,
+                                stempPrice: this.state.price,
+                                inviteCode: this.state.code,
+                                description: this.state.description,
+                                address: this.state.location,
+                                lat: location.lat,
+                                lng: location.lng
+                              })
+                              .then(async resp => {
+                                  console.log(resp.data)
+                                  const response = await fetch(this.state.image);
+                                  const blob = await response.blob();
+                                  var ref = firebase
+                                    .storage()
+                                    .ref()
+                                    .child("restaurent_images/" +resp.data.restaurent._id + ".jpg");
+                                  return ref.put(blob);
+
+                                 
+                                
+                              })
+                              .catch(err => console.log(err))
+                              this.setState({
+                                msg1: "Restaurent added Successfully",
+                                name: "",
+                                category: "",
+                                price: "",
+                                code: "",
+                                description: "",
+                                location: "",
+                                phone: "",
+                              })
+                          }else{
+                            this.setState({msg: "Invalid Invite Code!"})
+                          }
+                        })
+
+                      })
+                      .catch((error) => console.warn(error));
+              
+
+                   
+                    // this.setState(
+                    //   {
+                    //     loading: false,
+                    //   },
+                    //   alert("done")
+                    // );
+                  } else {
+                    this.setState({
+                      locationError: true,
+                      loading: false,
+                    });
+                  }
+                } else {
+                  this.setState({
+                    descriptionError: true,
+                    loading: false,
+                  });
+                }
+              } else {
+                this.setState({
+                  codeError: true,
+                  loading: false,
+                });
+              }
+            } else {
+              this.setState({
+                priceError: true,
+                loading: false,
+              });
+            }
+          } else {
+            this.setState({
+              phoneError: true,
+              loading: false,
+            });
+          }
+        } else {
+          this.setState({
+            categoryError: true,
+            loading: false,
+          });
+        }
+      } else {
+        this.setState({
+          nameError: true,
+          loading: false,
+        });
+      }
+    });
+  };
   render() {
+    console.log(this.state)
     var array = [1, 2, 3, 4, 5];
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
@@ -100,17 +240,33 @@ export default class Stamp extends React.Component {
           )}
           <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
             <View>
-              <View style={{ marginVertical: 10 }}>
+              <View
+                style={{
+                  marginVertical: 10,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 <LatoText
                   fontName="robo"
                   col="black"
                   fonSiz={16}
                   text={"Name"}
                 />
+                {this.state.nameError && (
+                  <LatoText
+                    fontName="robo"
+                    col="red"
+                    fonSiz={16}
+                    text={"Please add name"}
+                  />
+                )}
               </View>
               <TextInput
                 placeholder={"Resturant Name"}
-                onChangeText={(name) => this.setState(name)}
+                onChangeText={(name) =>
+                  this.setState({ name, nameError: false })
+                }
                 autoCapitalize={"none"}
                 value={this.state.name}
                 style={{
@@ -120,14 +276,29 @@ export default class Stamp extends React.Component {
                 }}
               />
             </View>
-            <View style={{ marginVertical: 10 }}>
+            <View
+              style={{
+                marginVertical: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
               <LatoText
                 fontName="robo"
                 col="black"
                 fonSiz={16}
                 text={"Category"}
               />
+              {this.state.categoryError && (
+                <LatoText
+                  fontName="robo"
+                  col="red"
+                  fonSiz={16}
+                  text={"Please add Category"}
+                />
+              )}
             </View>
+
             <View
               style={{
                 backgroundColor: "#EFF3F4",
@@ -140,7 +311,9 @@ export default class Stamp extends React.Component {
                     padding: 15,
                   },
                 }}
-                onValueChange={(category) => this.setState({ category })}
+                onValueChange={(category) =>
+                  this.setState({ category, categoryError: false })
+                }
                 items={[
                   { label: "All", value: "All" },
                   { label: "Fast Food", value: "Fast Food" },
@@ -152,17 +325,34 @@ export default class Stamp extends React.Component {
             </View>
 
             <View>
-              <View style={{ marginVertical: 10 }}>
+              <View
+                style={{
+                  marginVertical: 10,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 <LatoText
                   fontName="robo"
                   col="black"
                   fonSiz={16}
                   text={"Phone Number"}
                 />
+                {this.state.phoneError && (
+                  <LatoText
+                    fontName="robo"
+                    col="red"
+                    fonSiz={16}
+                    text={"Please add Phone Number"}
+                  />
+                )}
               </View>
+
               <TextInput
                 placeholder={"+874 232 32432 "}
-                onChangeText={(phone) => this.setState(phone)}
+                onChangeText={(phone) =>
+                  this.setState({ phone, phoneError: false })
+                }
                 autoCapitalize={"none"}
                 value={this.state.phone}
                 keyboardType="phone-pad"
@@ -174,19 +364,35 @@ export default class Stamp extends React.Component {
               />
             </View>
             <View>
-              <View style={{ marginVertical: 10 }}>
+              <View
+                style={{
+                  marginVertical: 10,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 <LatoText
                   fontName="robo"
                   col="black"
                   fonSiz={16}
                   text={"Stemp Price $"}
                 />
+                {this.state.priceError && (
+                  <LatoText
+                    fontName="robo"
+                    col="red"
+                    fonSiz={16}
+                    text={"Please add Stemp Price"}
+                  />
+                )}
               </View>
               <TextInput
                 placeholder={"eg. 20"}
-                onChangeText={(phone) => this.setState(phone)}
+                onChangeText={(price) =>
+                  this.setState({ price, priceError: false })
+                }
                 autoCapitalize={"none"}
-                value={this.state.phone}
+                value={this.state.price}
                 keyboardType="phone-pad"
                 style={{
                   padding: 15,
@@ -196,19 +402,35 @@ export default class Stamp extends React.Component {
               />
             </View>
             <View>
-              <View style={{ marginVertical: 10 }}>
+              <View
+                style={{
+                  marginVertical: 10,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 <LatoText
                   fontName="robo"
                   col="black"
                   fonSiz={16}
                   text={"Invite code"}
                 />
+                {this.state.codeError && (
+                  <LatoText
+                    fontName="robo"
+                    col="red"
+                    fonSiz={16}
+                    text={"Please add invite code"}
+                  />
+                )}
               </View>
               <TextInput
                 placeholder={"eg. 123456"}
-                onChangeText={(phone) => this.setState(phone)}
+                onChangeText={(code) =>
+                  this.setState({ code, codeError: false })
+                }
                 autoCapitalize={"none"}
-                value={this.state.phone}
+                value={this.state.code}
                 keyboardType="phone-pad"
                 style={{
                   padding: 15,
@@ -218,17 +440,34 @@ export default class Stamp extends React.Component {
               />
             </View>
             <View>
-              <View style={{ marginVertical: 10 }}>
+              <View
+                style={{
+                  marginVertical: 10,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
                 <LatoText
                   fontName="robo"
                   col="black"
                   fonSiz={16}
                   text={"Description"}
                 />
+                {this.state.descriptionError && (
+                  <LatoText
+                    fontName="robo"
+                    col="red"
+                    fonSiz={16}
+                    text={"Please add Description"}
+                  />
+                )}
               </View>
+
               <TextInput
                 placeholder={"Description about Restaurant"}
-                onChangeText={(description) => this.setState(description)}
+                onChangeText={(description) =>
+                  this.setState({ description, descriptionError: false })
+                }
                 autoCapitalize={"none"}
                 value={this.state.description}
                 style={{
@@ -238,14 +477,29 @@ export default class Stamp extends React.Component {
                 }}
               />
             </View>
-            <View style={{ marginVertical: 10 }}>
+            <View
+              style={{
+                marginVertical: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
               <LatoText
                 fontName="robo"
                 col="black"
                 fonSiz={16}
                 text={"Address"}
               />
+              {this.state.locationError && (
+                <LatoText
+                  fontName="robo"
+                  col="red"
+                  fonSiz={16}
+                  text={"Please add Address"}
+                />
+              )}
             </View>
+
             <View>
               <GooglePlacesAutocomplete
                 styles={{
@@ -289,10 +543,30 @@ export default class Stamp extends React.Component {
                   key: "AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI",
                   language: "en",
                 }}
-                onPress={(data, details) => {
-                  this.setState({ location: details.description });
+                onPress={(details) => {
+                  this.setState({
+                    location: details.description,
+                    locationError: false,
+                  });
                 }}
               />
+            </View>
+            <Text style={{textAlign: "center", color: "red"}}>{this.state.msg}</Text>
+            <Text style={{textAlign: "center", color: "green"}}>{this.state.msg1}</Text>
+
+
+            <View style={{ justifyContent: "center", marginTop: 20 }}>
+              <TouchableOpacity
+                onPress={() => this.handleSubmission()}
+                style={btnStyles.basic}
+              >
+                <LatoText
+                  fontName="robo"
+                  col="white"
+                  fonSiz={14}
+                  text={"Create"}
+                />
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>

@@ -33,7 +33,7 @@ class Login extends React.Component {
   }
 
   handleLogin(){
-   
+    console.log("Sdsd")
           if(validator.validate(this.state.email.trim())){
             if(this.state.password){
                     axios.post('http://192.168.0.108:3000/api/users/signin', {

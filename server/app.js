@@ -88,16 +88,15 @@ app.use('/api/users', users);
 app.post('/add/restaurent', async (req, res) => {
 
   let restaurent = new Restaurent({
-      storeName: req.body.storeName,
-      ownerName: req.body.ownerName,
-      emailAddress: req.body.emailAddress,
-      companyName: req.body.companyName,
-      companyId: req.body.companyId,
-      phoneNumber: req.body.phoneNumber,
-      storeAddress: req.body.storeAddress,
-      city: req.body.city,
-      county: req.body.county,
-      zipCode: req.body.zipCode
+    name:  req.body.name,
+    category: req.body.category,
+    phoneNumber: req.body.phoneNumber,
+    stempPrice: req.body.stempPrice,
+    inviteCode: req.body.inviteCode,
+    description: req.body.description,
+    address: req.body.address,
+    lat: req.body.lat,
+    lng: req.body.lng
   });
 
   restaurent.save(function (err) {
@@ -119,6 +118,29 @@ app.post('/add/restaurent', async (req, res) => {
 
 });
 
+//get inviteCode
+app.get('/get/inviteCode/:code', (req, res) => {
+
+  InviteCode.findOne({inviteCode: req.params.code})
+  .then(cod => {
+    res.json(cod);
+  })
+  .catch(err => res.status(404).json(err));
+}
+
+);
+
+//get all stores
+app.get('/get/restaurent/', (req, res) => {
+
+  Restaurent.find({})
+  .then(restaurent => {
+    res.json(restaurent);
+  })
+  .catch(err => res.status(404).json(err));
+}
+
+);
 
 //post store
 app.post('/add/store', async (req, res) => {
