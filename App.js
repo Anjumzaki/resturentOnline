@@ -17,9 +17,11 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import CustomDrawerContent from "./src/components/CustomDrawerContent";
 import { AntDesign } from "@expo/vector-icons";
 import CreateResturant from "./src/screens/CreateResturant";
+import ViewResturant from "./src/screens/ViewResturant";
+
 import store from "./src/store";
 import { Provider as StoreProvider } from "react-redux";
-import Fire from './src/config/Fire'
+import Fire from "./src/config/Fire";
 const Stack = createStackNavigator();
 
 function LoginAuth() {
@@ -49,6 +51,7 @@ function HomeSreen() {
       <HomeRoutes.Screen name="Stempelkarte" component={Stamp} />
       <HomeRoutes.Screen name="News" component={News} />
       <HomeRoutes.Screen name="Create Resturant" component={CreateResturant} />
+      <HomeRoutes.Screen name="View Resturant" component={ViewResturant} />
     </HomeRoutes.Navigator>
   );
 }

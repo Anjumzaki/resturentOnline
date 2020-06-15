@@ -110,7 +110,7 @@ class App extends React.Component {
                   <Callout>
                     <View style={{ flexDirection: "row" }}>
                       <CalloutImage id={item._id} />
-                      <View>
+                      <TouchableOpacity>
                         <Text style={{ paddingLeft: 10, width: 130 }}>
                           {item.name}
                         </Text>
@@ -119,12 +119,7 @@ class App extends React.Component {
                         >
                           {item.description}
                         </Text>
-                        {/* <Text
-                          style={{ paddingLeft: 10, width: 130, fontSize: 12 }}
-                        >
-                          Rating: 5
-                        </Text> */}
-                      </View>
+                      </TouchableOpacity>
                     </View>
                   </Callout>
                 </Marker>
