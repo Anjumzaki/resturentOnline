@@ -112,11 +112,11 @@ export default class Stamp extends React.Component {
                         //   longitudeDelta: 0.007,
                         // };
                         
-                        axios.get('http://192.168.0.108:3000/get/inviteCode/'+this.state.code)
+                        axios.get('http://192.168.18.5:3000/get/inviteCode/'+this.state.code)
                         .then(resp => {
                           console.log(resp.data)
                           if(resp.data !== null){
-                              axios.post('http://192.168.0.108:3000/add/restaurent',{
+                              axios.post('http://192.168.18.5:3000/add/restaurent',{
                                 name:  this.state.name,
                                 category: this.state.category,
                                 phoneNumber: this.state.phone,
@@ -551,7 +551,7 @@ export default class Stamp extends React.Component {
                 }}
               />
             </View>
-            <Text style={{textAlign: "center", color: "red"}}>{this.state.msg}</Text>
+            <Text style={{textAlign: "center", color: "red",marginTop:10}}>{this.state.msg}</Text>
             <Text style={{textAlign: "center", color: "green"}}>{this.state.msg1}</Text>
 
 

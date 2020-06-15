@@ -22,10 +22,11 @@ import { userAsync } from "../store/actions";
 import { connect } from "react-redux";
 import { ActivityIndicator } from "react-native-paper";
 import axios from "axios";
-import RestaurentImage from '../components/RestaurentImage'
+import RestaurentImage from "../components/RestaurentImage";
+import CalloutImage from "../components/CalloutImage";
 console.disableYellowBox = true;
 
- class App extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,11 +43,11 @@ console.disableYellowBox = true;
         longitudeDelta: 0.0421,
       },
       categ: 0,
-      restaurents: []
+      restaurents: [],
     };
   }
   async componentDidMount() {
-    console.log("redux data", this.props.user)
+    console.log("redux data", this.props.user);
     let { status } = await Location.requestPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission to access location was denied");
@@ -56,10 +57,10 @@ console.disableYellowBox = true;
       location,
     });
 
-
-    axios.get('http://192.168.0.108:3000/get/restaurent/')
-    .then(resp => this.setState({restaurents: resp.data}))
-    .catch(err => console.log(err))
+    axios
+      .get("http://192.168.18.5:3000/get/restaurent/")
+      .then((resp) => this.setState({ restaurents: resp.data }))
+      .catch((err) => console.log(err));
   }
   onMyLocation = async () => {
     let region = await Location.getCurrentPositionAsync({});
@@ -95,93 +96,39 @@ console.disableYellowBox = true;
                 coordinate={this.state.region}
                 title={"Your location"}
               ></Marker>
-              <Marker
-                coordinate={{
-                  latitude: 48.5867,
-                  longitude: 13.4319,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-                title={"Resturant Location"}
-                image={require("../assets/rsz_pin.png")}
-              >
-                <Callout>
-                  <View style={{ flexDirection: "row" }}>
-                    <Image
-                      style={{ width: 50, height: 50 }}
-                      source={require("../assets/4.jpg")}
-                    />
-                    <View>
-                      <Text style={{ paddingLeft: 10, width: 130 }}>
-                        Hotel Andreas Premium
-                      </Text>
-                      <Text
-                        style={{ paddingLeft: 10, width: 130, fontSize: 12 }}
-                      >
-                        Rating: 5
-                      </Text>
+              {this.state.restaurents.map((item, index) => (
+                <Marker
+                  coordinate={{
+                    latitude: item.lat,
+                    longitude: item.lng,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }}
+                  title={"Resturant Location"}
+                  image={require("../assets/rsz_pin.png")}
+                >
+                  <Callout>
+                    <View style={{ flexDirection: "row" }}>
+                      <CalloutImage id={item._id} />
+                      <View>
+                        <Text style={{ paddingLeft: 10, width: 130 }}>
+                          {item.name}
+                        </Text>
+                        <Text
+                          style={{ paddingLeft: 10, width: 130, fontSize: 10 }}
+                        >
+                          {item.description}
+                        </Text>
+                        {/* <Text
+                          style={{ paddingLeft: 10, width: 130, fontSize: 12 }}
+                        >
+                          Rating: 5
+                        </Text> */}
+                      </View>
                     </View>
-                  </View>
-                </Callout>
-              </Marker>
-              <Marker
-                coordinate={{
-                  latitude: 48.5967,
-                  longitude: 13.4119,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-                title={"Resturant Location"}
-                image={require("../assets/rsz_pin.png")}
-              >
-                <Callout>
-                  <View style={{ flexDirection: "row" }}>
-                    <Image
-                      style={{ width: 50, height: 50 }}
-                      source={require("../assets/4.jpg")}
-                    />
-                    <View>
-                      <Text style={{ paddingLeft: 10, width: 130 }}>
-                        Hotel Andreas Premium
-                      </Text>
-                      <Text
-                        style={{ paddingLeft: 10, width: 130, fontSize: 12 }}
-                      >
-                        Rating: 5
-                      </Text>
-                    </View>
-                  </View>
-                </Callout>
-              </Marker>
-              <Marker
-                coordinate={{
-                  latitude: 48.5767,
-                  longitude: 13.4119,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-                title={"Resturant Location"}
-                image={require("../assets/rsz_pin.png")}
-              >
-                <Callout>
-                  <View style={{ flexDirection: "row" }}>
-                    <Image
-                      style={{ width: 50, height: 50 }}
-                      source={require("../assets/4.jpg")}
-                    />
-                    <View>
-                      <Text style={{ paddingLeft: 10, width: 130 }}>
-                        Hotel Andreas Premium
-                      </Text>
-                      <Text
-                        style={{ paddingLeft: 10, width: 130, fontSize: 12 }}
-                      >
-                        Rating: 5
-                      </Text>
-                    </View>
-                  </View>
-                </Callout>
-              </Marker>
+                  </Callout>
+                </Marker>
+              ))}
             </MapView>
             <View style={styles.topScroll}>
               <ScrollView
@@ -292,7 +239,7 @@ console.disableYellowBox = true;
                     key={index}
                     style={styles.card}
                   >
-                  <RestaurentImage id={item._id}/>
+                    <RestaurentImage id={item._id} />
                     <View style={{ padding: 5, paddingHorizontal: 10 }}>
                       <LatoText
                         fontName="robo"
@@ -365,20 +312,17 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => ({
-  user: state.user.user, 
+const mapStateToProps = (state) => ({
+  user: state.user.user,
   loading: state.user.userLoading,
-  error: state.user.userError
+  error: state.user.userError,
 });
 const mapDispatchToProps = (dispatch, ownProps) =>
   bindActionCreators(
-      {
-        userAsync
-      },
-      dispatch
+    {
+      userAsync,
+    },
+    dispatch
   );
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

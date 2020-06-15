@@ -41,7 +41,7 @@ export default class Register extends React.Component {
           if(validator.validate(this.state.email.trim())){
             if(this.state.password){
               if(this.state.userType){
-                    axios.post('http://192.168.0.108:3000/api/users/signup', {
+                    axios.post('http://192.168.18.5:3000/api/users/signup', {
                       firstName: this.state.firstName,
                       lastName: this.state.lastName,
                       mobile: this.state.mobile,
