@@ -191,9 +191,10 @@ class App extends React.Component {
             <View style={styles.botomScroll}>
               <View
                 style={{
-                  justifyContent: "flex-end",
-                  width: "100%",
                   alignItems: "flex-end",
+                  position:'absolute',
+                  top:-20,
+                  right:0
                 }}
               >
                 <View style={{ paddingRight: 20 }}>
@@ -204,6 +205,10 @@ class App extends React.Component {
                       borderRadius: 100,
                       borderColor: "#5072B1",
                       borderWidth: 2,
+                      width:50,
+                      height:50,
+                      justifyContent:'center',
+                      alignItems:'center'
                     }}
                     onPress={() => this.onMyLocation()}
                   >
@@ -278,10 +283,11 @@ const styles = StyleSheet.create({
   },
   botomScroll: {
     position: "absolute",
-    bottom: 80,
+    bottom: 30,
     height: 300,
     width: "100%",
     justifyContent: "center",
+
   },
   topScroll: {
     position: "absolute",
