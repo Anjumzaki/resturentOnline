@@ -17,9 +17,12 @@ import { Marker } from "react-native-maps";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import MyCustomMarkerView from "../components/MyCustomMarkerView";
 import { Callout } from "react-native-maps";
+import { bindActionCreators } from "redux";
+import { userAsync } from "../store/actions";
+import { connect } from "react-redux";
 console.disableYellowBox = true;
 
-export default class App extends React.Component {
+ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -39,6 +42,7 @@ export default class App extends React.Component {
     };
   }
   async componentDidMount() {
+    console.log("redux data", this.props.user)
     let { status } = await Location.requestPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission to access location was denied");
@@ -355,3 +359,21 @@ const styles = StyleSheet.create({
     top: "50%",
   },
 });
+
+const mapStateToProps = state => ({
+  user: state.user.user, 
+  loading: state.user.userLoading,
+  error: state.user.userError
+});
+const mapDispatchToProps = (dispatch, ownProps) =>
+  bindActionCreators(
+      {
+        userAsync
+      },
+      dispatch
+  );
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);

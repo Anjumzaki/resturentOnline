@@ -13,17 +13,60 @@ import LatoText from "../components/LatoText";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
+import axios from 'axios';
+import validator from 'email-validator';
+import { bindActionCreators } from "redux";
+import { userAsync } from "../store/actions";
+import { connect } from "react-redux";
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
-export default class Login extends React.Component {
+
+class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isSecure: true,
+      email: "",
+      password: "",
+      msg: ''
     };
   }
 
+  handleLogin(){
+   
+          if(validator.validate(this.state.email.trim())){
+            if(this.state.password){
+                    axios.post('http://192.168.0.108:3000/api/users/signin', {
+                      password: this.state.password,
+                      email: this.state.email,
+                    })
+                    .then(resp => {
+                      console.log('res',resp.data)
+                      if(resp.data.user){
+                        this.setState({
+                          email: "",
+                          password: ""
+                        })
+                        this.props.userAsync(resp.data)
+                        this.props.navigation.push('App')
+                      }else{
+                        this.setState({msg: resp.data})
+                      }
+                     
+                    }).catch(err => console.log(err))
+           
+            }else{
+              this.setState({msg: "Please Enter Password"})
+            }
+          }else{
+            this.setState({msg: "Please Enter Correct Email"})
+          }
+
+    
+    
+  }
   render() {
+    console.log(this.state)
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
         <ScrollView
@@ -67,6 +110,8 @@ export default class Login extends React.Component {
                   autoCapitalize={"none"}
                   style={inStyles.innerFeild}
                   keyboardType="email-address"
+                  onChangeText={(email) => this.setState({email})}
+
                 />
                 <MaterialCommunityIcons
                   style={inStyles.inputIcon}
@@ -88,6 +133,8 @@ export default class Login extends React.Component {
                   secureTextEntry={this.state.isSecure}
                   autoCapitalize={"none"}
                   style={inStyles.innerFeild}
+                  onChangeText={(password) => this.setState({password})}
+
                 />
                 <TouchableHighlight
                   underlayColor="transparent"
@@ -116,7 +163,9 @@ export default class Login extends React.Component {
                   )}
                 </TouchableHighlight>
               </View>
-              <TouchableOpacity onPress={()=>this.props.navigation.push('App')} style={btnStyles.basic}>
+              <Text style={{textAlign: "center", color: "red"}}>{this.state.msg}</Text>
+
+              <TouchableOpacity onPress={()=> this.handleLogin() } style={btnStyles.basic}>
                 <LatoText
                   fontName="robo"
                   col="white"
@@ -185,3 +234,22 @@ export default class Login extends React.Component {
     );
   }
 }
+
+
+const mapStateToProps = state => ({
+  user: state.user.user, 
+  loading: state.user.userLoading,
+  error: state.user.userError
+});
+const mapDispatchToProps = (dispatch, ownProps) =>
+  bindActionCreators(
+      {
+        userAsync
+      },
+      dispatch
+  );
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);
