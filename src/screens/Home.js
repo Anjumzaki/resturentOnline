@@ -106,8 +106,19 @@ class App extends React.Component {
                   }}
                   title={"Resturant Location"}
                   image={require("../assets/rsz_pin.png")}
+                  onCalloutPress={() =>
+                    this.props.navigation.navigate("View Resturant", {
+                      item: item,
+                    })
+                  }
                 >
-                  <Callout>
+                  <Callout
+                    onPress={() =>
+                      this.props.navigation.navigate("View Resturant", {
+                        item: item,
+                      })
+                    }
+                  >
                     <View style={{ flexDirection: "row" }}>
                       <CalloutImage id={item._id} />
                       <View>
@@ -119,11 +130,6 @@ class App extends React.Component {
                         >
                           {item.description}
                         </Text>
-                        {/* <Text
-                          style={{ paddingLeft: 10, width: 130, fontSize: 12 }}
-                        >
-                          Rating: 5
-                        </Text> */}
                       </View>
                     </View>
                   </Callout>

@@ -10,6 +10,7 @@ import {
   Linking,
   LayoutAnimation,
   Alert,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { conStyles, inStyles, btnStyles } from "../styles/styles";
@@ -28,7 +29,6 @@ import { userAsync } from "../store/actions";
 import { connect } from "react-redux";
 import axios from "axios"
 const WIDTH = Dimensions.get("screen").width;
-
 const HEIGHT = Dimensions.get("screen").height;
 class Stamp extends React.Component {
   constructor(props) {
@@ -38,7 +38,7 @@ class Stamp extends React.Component {
       hasCameraPermission: null,
       lastScannedUrl: null,
       isUser: false,
-      resData: ""
+      flag: true
     };
   }
 
@@ -57,21 +57,22 @@ class Stamp extends React.Component {
       hasCameraPermission: status === "granted",
     });
   };
-  _handleBarCodeRead = (result) => {
-    alert("Scan Complete")
-    if (result.data !== this.state.lastScannedUrl) {
+  handleBarCodeScanned = (result) => {
+    if (result.data !== this.state.lastScannedUrl && this.state.flag) {
+      this.setState({flag: false})
       LayoutAnimation.spring();
       this.setState({ lastScannedUrl: result.data });
-      axios.put("http://192.168.0.108:3000/edit/user/"+this.props.user.user._id+"/"+parseInt(this.props.user.user.scanCode)+1)
+      axios.put("http://192.168.0.108:3000/edit/user/"+this.props.user.user._id+"/"+parseInt(parseInt(this.props.user.user.scanCount)+1))
       .then(resp => console.log(resp.data))
       .catch(err => console.log(err))
-      if(parseInt(this.props.user.user.scanCode)+1>10){
+      if(parseInt(parseInt(this.props.user.user.scanCount)+1)>10){
           alert("Ein kostenloses Essen wartet auf Sie.")
           axios.put("http://192.168.0.108:3000/edit/user/"+this.props.user.user._id+"/"+0)
           .then(resp => console.log(resp.data))
           .catch(err => console.log(err))
       }
     }
+    alert("asdas");
   };
 
   render() {
@@ -106,8 +107,8 @@ class Stamp extends React.Component {
                 <View
                   key={index}
                   style={{
-                    width: WIDTH / 3 - 20,
-                    height: WIDTH / 3 - 20,
+                    width: WIDTH / 4 - 20,
+                    height: WIDTH / 4 - 20,
                     justifyContent: "center",
                     alignItems: "center",
                   }}
@@ -121,7 +122,12 @@ class Stamp extends React.Component {
             </View>
           )}
           {this.state.isUser ? (
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               {this.state.hasCameraPermission === null ? (
                 <Text>Requesting for camera permission</Text>
               ) : this.state.hasCameraPermission === false ? (
@@ -130,11 +136,8 @@ class Stamp extends React.Component {
                 </Text>
               ) : (
                 <BarCodeScanner
-                  onBarCodeRead={this._handleBarCodeRead}
-                  style={{
-                    height: WIDTH / 1.4,
-                    width: WIDTH / 1.4,
-                  }}
+                  onBarCodeScanned={this.handleBarCodeScanned}
+                  style={{ width: "150%", height: "100%" }}
                 />
               )}
             </View>
@@ -153,12 +156,12 @@ class Stamp extends React.Component {
                 fgColor="white"
               />
               <View style={{ paddingVertical: 30 }}>
-                <LatoText
+                {/* <LatoText
                   fontName="robo"
                   col="black"
                   fonSiz={18}
                   text={"Recive "+this.state.resData ?  this.state.resData.stempPrice: 0+"$ from customer"}
-                />
+                /> */}
               </View>
             </View>
           )}
@@ -166,7 +169,7 @@ class Stamp extends React.Component {
           <View style={{ paddingHorizontal: 20 }}>
             <TouchableOpacity
               // onPress={() => this.props.navigation.push("App")}
-              style={btnStyles.basic}
+              style={[btnStyles.basic, { position: "absolute", bottom: 10 }]}
             >
               <LatoText
                 fontName="robo"

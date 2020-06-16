@@ -365,9 +365,14 @@ class Stamp extends React.Component {
             >
               <RNPickerSelect
                 style={{
-                  viewContainer: {
-                    padding: 15,
-                  },
+                  viewContainer:
+                    Platform.OS == "ios"
+                      ? {
+                          padding: 15,
+                        }
+                      : {
+                          padding: 0,
+                        },
                 }}
                 onValueChange={(category) =>
                   this.setState({ category, categoryError: false })

@@ -1,15 +1,15 @@
 import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
-import firebase from "firebase"
+import firebase from "firebase";
 import * as Font from "expo-font";
 import { chocolate } from "color-name";
 
 class LatoText extends React.Component {
   state = {
-    image : ""
+    image: "",
   };
   async componentDidMount() {
-      console.log("id",this.props.id)
+    console.log("id", this.props.id);
     const ref = firebase
     .storage()
     .ref("/restaurent_images/"+this.props.id+".jpg");
@@ -22,14 +22,14 @@ class LatoText extends React.Component {
 
   render() {
     return (
-        <Image
+      <Image
         style={{
           width: 220,
           height: 140,
           borderTopRightRadius: 20,
           borderTopRightRadius: 20,
         }}
-        source={{uri: this.state.image}}
+        source={{ uri: this.state.image }}
       />
     );
   }
@@ -40,6 +40,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center"
-  }
+    justifyContent: "center",
+  },
 });
