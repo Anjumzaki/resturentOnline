@@ -284,8 +284,8 @@ console.disableYellowBox = true;
                         region: {
                           latitude: item.lat,
                           longitude: item.lng,
-                          latitudeDelta: 0.0922,
-                          longitudeDelta: 0.0421,
+                          latitudeDelta: item.lat,
+                          longitudeDelta: item.lng,
                         },
                       })
                     }
