@@ -99,8 +99,8 @@ class App extends React.Component {
               {this.state.restaurents.map((item, index) => (
                 <Marker
                   coordinate={{
-                    latitude: item.lat,
-                    longitude: item.lng,
+                    latitude: Number(item.lat),
+                    longitude: Number(item.lng),
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
                   }}
@@ -192,9 +192,9 @@ class App extends React.Component {
               <View
                 style={{
                   alignItems: "flex-end",
-                  position:'absolute',
-                  top:-20,
-                  right:0
+                  position: "absolute",
+                  top: -20,
+                  right: 0,
                 }}
               >
                 <View style={{ paddingRight: 20 }}>
@@ -205,10 +205,10 @@ class App extends React.Component {
                       borderRadius: 100,
                       borderColor: "#5072B1",
                       borderWidth: 2,
-                      width:50,
-                      height:50,
-                      justifyContent:'center',
-                      alignItems:'center'
+                      width: 50,
+                      height: 50,
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                     onPress={() => this.onMyLocation()}
                   >
@@ -287,7 +287,6 @@ const styles = StyleSheet.create({
     height: 300,
     width: "100%",
     justifyContent: "center",
-
   },
   topScroll: {
     position: "absolute",
