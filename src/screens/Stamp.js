@@ -68,30 +68,32 @@ export default class Stamp extends React.Component {
             justifyContent: "space-between",
           }}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "center",
-            }}
-          >
-            {array.map((item, index) => (
-              <View
-                key={index}
-                style={{
-                  width: WIDTH / 3 - 20,
-                  height: WIDTH / 3 - 20,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  style={{ width: "60%", height: "60%" }}
-                  source={require("../assets/stemp.png")}
-                />
-              </View>
-            ))}
-          </View>
+          {this.state.isUser && (
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
+              {array.map((item, index) => (
+                <View
+                  key={index}
+                  style={{
+                    width: WIDTH / 3 - 20,
+                    height: WIDTH / 3 - 20,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Image
+                    style={{ width: "60%", height: "60%" }}
+                    source={require("../assets/stemp.png")}
+                  />
+                </View>
+              ))}
+            </View>
+          )}
           {this.state.isUser ? (
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               {this.state.hasCameraPermission === null ? (
@@ -111,13 +113,27 @@ export default class Stamp extends React.Component {
               )}
             </View>
           ) : (
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                flex: 1,
+              }}
+            >
               <QRCode
                 value={"Anjum is going to Andrease premium resturant"}
                 size={200}
                 bgColor="black"
                 fgColor="white"
               />
+              <View style={{ paddingVertical: 30 }}>
+                <LatoText
+                  fontName="robo"
+                  col="black"
+                  fonSiz={18}
+                  text={"Recive 10$ from customer"}
+                />
+              </View>
             </View>
           )}
           <Text>{this.state.lastScannedUrl && this.state.lastScannedUrl}</Text>

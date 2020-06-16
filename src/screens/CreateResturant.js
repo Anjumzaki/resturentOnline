@@ -24,9 +24,9 @@ import * as ImagePicker from "expo-image-picker";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import RNPickerSelect from "react-native-picker-select";
 import axios from "axios";
-import Geocoder from 'react-native-geocoding';
-import firebase from "firebase"
-Geocoder.init("AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI"); 
+import Geocoder from "react-native-geocoding";
+import firebase from "firebase";
+Geocoder.init("AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI");
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 const options = {
@@ -34,6 +34,7 @@ const options = {
   storageOptions: {
     skipBackup: true,
     path: "images",
+    menu: "",
   },
 };
 export default class Stamp extends React.Component {
@@ -57,7 +58,7 @@ export default class Stamp extends React.Component {
       codeError: false,
       descriptionError: false,
       locationError: false,
-      msg: ""
+      msg: "",
     };
   }
 
@@ -76,7 +77,7 @@ export default class Stamp extends React.Component {
 
   pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -90,8 +91,23 @@ export default class Stamp extends React.Component {
       });
     }
   };
-  handleSubmission(){
-    console.log("SDDDDDDDDDDDDDDDDDD")
+  pickUpload = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({
+        menu: result.uri,
+      });
+    }
+  };
+  handleSubmission() {
+    console.log("SDDDDDDDDDDDDDDDDDD");
     this.setState({ loading: true }, () => {
       if (this.state.name.trim()) {
         if (this.state.category.trim()) {
@@ -100,47 +116,57 @@ export default class Stamp extends React.Component {
               if (this.state.code.trim()) {
                 if (this.state.description.trim()) {
                   if (this.state.location) {
-
                     Geocoder.from(this.state.location)
                       .then((json) => {
                         var location = json.results[0].geometry.location;
-                        console.log("SDLOC",location)
+                        console.log("SDLOC", location);
                         // let region = {
                         //   latitude: location.lat,
                         //   longitude: location.lng,
                         //   latitudeDelta: 0.007,
                         //   longitudeDelta: 0.007,
                         // };
-                        
-                        axios.get('http://192.168.0.108:3000/get/inviteCode/'+this.state.code)
-                        .then(resp => {
-                          console.log(resp.data)
-                          if(resp.data !== null){
-                              axios.post('http://192.168.0.108:3000/add/restaurent',{
-                                name:  this.state.name,
-                                category: this.state.category,
-                                phoneNumber: this.state.phone,
-                                stempPrice: this.state.price,
-                                inviteCode: this.state.code,
-                                description: this.state.description,
-                                address: this.state.location,
-                                lat: location.lat,
-                                lng: location.lng
-                              })
-                              .then(async resp => {
-                                  console.log(resp.data)
-                                  const response = await fetch(this.state.image);
+
+                        axios
+                          .get(
+                            "http://192.168.18.5:3000/get/inviteCode/" +
+                              this.state.code
+                          )
+                          .then((resp) => {
+                            console.log(resp.data);
+                            if (resp.data !== null) {
+                              axios
+                                .post(
+                                  "http://192.168.18.5:3000/add/restaurent",
+                                  {
+                                    name: this.state.name,
+                                    category: this.state.category,
+                                    phoneNumber: this.state.phone,
+                                    stempPrice: this.state.price,
+                                    inviteCode: this.state.code,
+                                    description: this.state.description,
+                                    address: this.state.location,
+                                    lat: location.lat,
+                                    lng: location.lng,
+                                  }
+                                )
+                                .then(async (resp) => {
+                                  console.log(resp.data);
+                                  const response = await fetch(
+                                    this.state.image
+                                  );
                                   const blob = await response.blob();
                                   var ref = firebase
                                     .storage()
                                     .ref()
-                                    .child("restaurent_images/" +resp.data.restaurent._id + ".jpg");
+                                    .child(
+                                      "restaurent_images/" +
+                                        resp.data.restaurent._id +
+                                        ".jpg"
+                                    );
                                   return ref.put(blob);
-
-                                 
-                                
-                              })
-                              .catch(err => console.log(err))
+                                })
+                                .catch((err) => console.log(err));
                               this.setState({
                                 msg1: "Restaurent added Successfully",
                                 name: "",
@@ -150,17 +176,14 @@ export default class Stamp extends React.Component {
                                 description: "",
                                 location: "",
                                 phone: "",
-                              })
-                          }else{
-                            this.setState({msg: "Invalid Invite Code!"})
-                          }
-                        })
-
+                              });
+                            } else {
+                              this.setState({ msg: "Invalid Invite Code!" });
+                            }
+                          });
                       })
                       .catch((error) => console.warn(error));
-              
 
-                   
                     // this.setState(
                     //   {
                     //     loading: false,
@@ -210,9 +233,9 @@ export default class Stamp extends React.Component {
         });
       }
     });
-  };
+  }
   render() {
-    console.log(this.state)
+    console.log(this.state);
     var array = [1, 2, 3, 4, 5];
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
@@ -551,9 +574,43 @@ export default class Stamp extends React.Component {
                 }}
               />
             </View>
-            <Text style={{textAlign: "center", color: "red"}}>{this.state.msg}</Text>
-            <Text style={{textAlign: "center", color: "green"}}>{this.state.msg1}</Text>
+            <View>
+              <View
+                style={{
+                  marginVertical: 10,
 
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <View style={{ paddingVertical: 10 }}>
+                  <LatoText
+                    fontName="robo"
+                    col="black"
+                    fonSiz={16}
+                    text={"Upload Menu"}
+                  />
+                </View>
+                {this.state.menu ? (
+                  <View style={{ paddingHorizontal: 20, paddingVertical: 20 }}>
+                    <MaterialIcons name="done" size={24} color="green" />
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => this.pickUpload()}
+                    style={{ paddingHorizontal: 20, paddingVertical: 20 }}
+                  >
+                    <FontAwesome5 name="upload" size={24} color="black" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+            <Text style={{ textAlign: "center", color: "red", marginTop: 10 }}>
+              {this.state.msg}
+            </Text>
+            <Text style={{ textAlign: "center", color: "green" }}>
+              {this.state.msg1}
+            </Text>
 
             <View style={{ justifyContent: "center", marginTop: 20 }}>
               <TouchableOpacity
