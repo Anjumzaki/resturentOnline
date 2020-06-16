@@ -20,7 +20,8 @@ router.post('/signup', async (req, res) => {
             email: req.body.email,
             mobile: req.body.mobile,
             password: req.body.password,
-            type: req.body.type
+            type: req.body.type,
+            scanCount: 0
         });
 
         const salt = await bcrypt.genSalt(10);

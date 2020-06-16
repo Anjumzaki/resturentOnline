@@ -21,11 +21,16 @@ import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import SingleHeader from "../components/SingleHeader";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import QRCode from "react-native-qrcode-generator";
+
 import * as Permissions from "expo-permissions";
+import { bindActionCreators } from "redux";
+import { userAsync } from "../store/actions";
+import { connect } from "react-redux";
+import axios from "axios"
 const WIDTH = Dimensions.get("screen").width;
 
 const HEIGHT = Dimensions.get("screen").height;
-export default class Stamp extends React.Component {
+class Stamp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,11 +38,17 @@ export default class Stamp extends React.Component {
       hasCameraPermission: null,
       lastScannedUrl: null,
       isUser: false,
+      resData: ""
     };
   }
 
   componentDidMount() {
+    if(this.props.user.user.type === "User"){
+       this.setState({isUser: true})
+    }
     this._requestCameraPermission();
+    axios.get('http://192.168.0.108:3000/get/restaurent/'+this.props.user.user._id)
+    .then(resp => this.setState({resData: resp.data}))
   }
 
   _requestCameraPermission = async () => {
@@ -47,14 +58,29 @@ export default class Stamp extends React.Component {
     });
   };
   _handleBarCodeRead = (result) => {
+    alert("Scan Complete")
     if (result.data !== this.state.lastScannedUrl) {
       LayoutAnimation.spring();
       this.setState({ lastScannedUrl: result.data });
+      axios.put("http://192.168.0.108:3000/edit/user/"+this.props.user.user._id+"/"+parseInt(this.props.user.user.scanCode)+1)
+      .then(resp => console.log(resp.data))
+      .catch(err => console.log(err))
+      if(parseInt(this.props.user.user.scanCode)+1>10){
+          alert("Ein kostenloses Essen wartet auf Sie.")
+          axios.put("http://192.168.0.108:3000/edit/user/"+this.props.user.user._id+"/"+0)
+          .then(resp => console.log(resp.data))
+          .catch(err => console.log(err))
+      }
     }
   };
 
   render() {
-    var array = [1, 2, 3, 4];
+    console.log("State", this.state, this.props.user)
+    var array = [];
+
+    for(var i=0; i<this.props.user.user.scanCount; i++){
+        array.push(i)
+    }
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
         <StatusBar translucent={true} backgroundColor="transparent" />
@@ -121,7 +147,7 @@ export default class Stamp extends React.Component {
               }}
             >
               <QRCode
-                value={"Anjum is going to Andrease premium resturant"}
+                value={this.state.resData ? this.state.resData._id : ""}
                 size={200}
                 bgColor="black"
                 fgColor="white"
@@ -131,7 +157,7 @@ export default class Stamp extends React.Component {
                   fontName="robo"
                   col="black"
                   fonSiz={18}
-                  text={"Recive 10$ from customer"}
+                  text={"Recive "+this.state.resData ?  this.state.resData.stempPrice: 0+"$ from customer"}
                 />
               </View>
             </View>
@@ -155,3 +181,17 @@ export default class Stamp extends React.Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  user: state.user.user,
+  loading: state.user.userLoading,
+  error: state.user.userError,
+});
+const mapDispatchToProps = (dispatch, ownProps) =>
+  bindActionCreators(
+    {
+      userAsync,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchToProps)(Stamp);

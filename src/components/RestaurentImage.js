@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import firebase from "firebase"
 import * as Font from "expo-font";
+import { chocolate } from "color-name";
 
 class LatoText extends React.Component {
   state = {
@@ -15,7 +16,8 @@ class LatoText extends React.Component {
   ref.getDownloadURL().then(url => {
       console.log("urllllll",url)
     this.setState({ image: url });
-  });
+  })
+  .catch(err => console.log(err));
   }
 
   render() {

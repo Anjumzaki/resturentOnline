@@ -15,7 +15,7 @@ class CalloutImage extends React.Component {
   ref.getDownloadURL().then(url => {
       console.log("urllllll",url)
     this.setState({ image: url });
-  });
+  }).catch(err => console.log(err));
   }
 
   render() {

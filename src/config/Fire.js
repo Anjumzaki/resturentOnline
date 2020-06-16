@@ -1,15 +1,16 @@
 import firebase from 'firebase';
 
-var config = {
-  apiKey: "AIzaSyDrNcRqHc6o9M41ffUhu7ODOqHl8_MHEyE",
-  authDomain: "restaurentonline-a738d.firebaseapp.com",
-  databaseURL: "https://restaurentonline-a738d.firebaseio.com",
-  projectId: "restaurentonline-a738d",
-  storageBucket: "restaurentonline-a738d.appspot.com",
-  messagingSenderId: "843710583197",
-  appId: "1:843710583197:web:0a3fb14a2ef3595eaddf74",
-  measurementId: "G-S6Z06ZLEDH"
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDmmgZKxKzWrhBnFwj5S5lms6pLDsvtCiQ",
+  authDomain: "ppass-b3b38.firebaseapp.com",
+  databaseURL: "https://ppass-b3b38.firebaseio.com",
+  projectId: "ppass-b3b38",
+  storageBucket: "ppass-b3b38.appspot.com",
+  messagingSenderId: "183672479547",
+  appId: "1:183672479547:web:d8960763a66ad4f700a11e",
+  measurementId: "G-7X2FBY4SMF"
 };
 
-  const fire = firebase.initializeApp(config);
+  const fire = firebase.initializeApp(firebaseConfig);
   export default fire;

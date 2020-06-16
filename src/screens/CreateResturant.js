@@ -26,7 +26,11 @@ import RNPickerSelect from "react-native-picker-select";
 import axios from "axios";
 import Geocoder from "react-native-geocoding";
 import firebase from "firebase";
+import { bindActionCreators } from "redux";
+import { userAsync } from "../store/actions";
+import { connect } from "react-redux";
 Geocoder.init("AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI");
+
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 const options = {
@@ -37,7 +41,8 @@ const options = {
     menu: "",
   },
 };
-export default class Stamp extends React.Component {
+
+class Stamp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -59,11 +64,19 @@ export default class Stamp extends React.Component {
       descriptionError: false,
       locationError: false,
       msg: "",
+      resData: false
     };
   }
 
   componentDidMount() {
     this._requestCameraPermission();
+    axios.get('http://192.168.0.108:3000/get/restaurent/'+this.props.user.user._id)
+    .then(resp => {
+      console.log("ssssssss",resp.data)
+      if(resp.data !== null){
+        this.setState({resData: true})
+      }
+    })
   }
 
   _requestCameraPermission = async () => {
@@ -106,6 +119,25 @@ export default class Stamp extends React.Component {
       });
     }
   };
+
+  async uploadMenu(id){
+    const response = await fetch(
+      this.state.menu
+    );
+    const blob1 = await response.blob();
+    var ref = firebase
+      .storage()
+      .ref()
+      .child(
+        "menu_images/" +
+          id +
+          ".jpg"
+      );
+    return ref.put(blob1);
+                                  
+                                  
+  }
+
   handleSubmission() {
     console.log("SDDDDDDDDDDDDDDDDDD");
     this.setState({ loading: true }, () => {
@@ -118,14 +150,7 @@ export default class Stamp extends React.Component {
                   if (this.state.location) {
                     Geocoder.from(this.state.location)
                       .then((json) => {
-                        var location = json.results[0].geometry.location;
-                        console.log("SDLOC", location);
-                        // let region = {
-                        //   latitude: location.lat,
-                        //   longitude: location.lng,
-                        //   latitudeDelta: 0.007,
-                        //   longitudeDelta: 0.007,
-                        // };
+                        var location = json.results[0].geometry.location;                  
 
                         axios
                           .get(
@@ -146,12 +171,16 @@ export default class Stamp extends React.Component {
                                     inviteCode: this.state.code,
                                     description: this.state.description,
                                     address: this.state.location,
+                                    userId: this.props.user.user._id,
                                     lat: location.lat,
                                     lng: location.lng,
                                   }
                                 )
                                 .then(async (resp) => {
                                   console.log(resp.data);
+                                  this.uploadMenu(resp.data.restaurent._id)
+
+
                                   const response = await fetch(
                                     this.state.image
                                   );
@@ -165,6 +194,9 @@ export default class Stamp extends React.Component {
                                         ".jpg"
                                     );
                                   return ref.put(blob);
+                                  
+                                  
+                                 
                                 })
                                 .catch((err) => console.log(err));
                               this.setState({
@@ -244,6 +276,9 @@ export default class Stamp extends React.Component {
           nameTitle="Create Resturant"
           navigation={this.props.navigation}
         />
+        {this.state.resData ? (
+          <Text style={{textAlign: "center", fontWeight: "bold"}}>You have already created a restaurant</Text>
+        ): (
         <ScrollView
           keyboardShouldPersistTaps="always"
           listViewDisplayed={false}
@@ -626,8 +661,22 @@ export default class Stamp extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
+        </ScrollView>)}
       </SafeAreaView>
     );
   }
 }
+const mapStateToProps = (state) => ({
+  user: state.user.user,
+  loading: state.user.userLoading,
+  error: state.user.userError,
+});
+const mapDispatchToProps = (dispatch, ownProps) =>
+  bindActionCreators(
+    {
+      userAsync,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchToProps)(Stamp);

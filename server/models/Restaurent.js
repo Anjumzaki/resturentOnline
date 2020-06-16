@@ -11,6 +11,7 @@ stempPrice: String,
 inviteCode: String,
 description: String,
 address: String,
+userId: String,
 lat: String,
 lng: String
 

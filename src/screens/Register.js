@@ -35,19 +35,22 @@ export default class Register extends React.Component {
   }
 
   handleSignUp(){
+    console.log("called")
     if(this.state.firstName){
       if(this.state.lastName){
         if(this.state.mobile){
           if(validator.validate(this.state.email.trim())){
             if(this.state.password){
               if(this.state.userType){
-                    axios.post('http://192.168.18.5:3000/api/users/signup', {
+                console.log("Inn")
+
+                    axios.post('http://192.168.0.108:3000/api/users/signup', {
                       firstName: this.state.firstName,
                       lastName: this.state.lastName,
                       mobile: this.state.mobile,
                       email: this.state.email,
                       password: this.state.password,
-                      type: this.state.userType,
+                      type: this.state.userType
                     })
                     .then(resp => {
                       console.log('res',resp.data)
@@ -88,6 +91,7 @@ export default class Register extends React.Component {
   }
 
   render() {
+    console.log(this.state)
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
         <StatusBar translucent={true} backgroundColor="transparent" />

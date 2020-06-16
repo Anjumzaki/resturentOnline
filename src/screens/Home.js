@@ -46,7 +46,7 @@ class App extends React.Component {
       restaurents: [],
     };
   }
-  async componentDidMount() {
+  async componentDidMount() { 
     console.log("redux data", this.props.user);
     let { status } = await Location.requestPermissionsAsync();
     if (status !== "granted") {

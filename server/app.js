@@ -86,7 +86,7 @@ app.use('/api/users', users);
 
 //post store
 app.post('/add/restaurent', async (req, res) => {
-
+    console.log(req.body)
   let restaurent = new Restaurent({
     name:  req.body.name,
     category: req.body.category,
@@ -95,6 +95,7 @@ app.post('/add/restaurent', async (req, res) => {
     inviteCode: req.body.inviteCode,
     description: req.body.description,
     address: req.body.address,
+    userId: req.body.userId,
     lat: req.body.lat,
     lng: req.body.lng
   });
@@ -141,6 +142,37 @@ app.get('/get/restaurent/', (req, res) => {
 }
 
 );
+
+
+//get all stores
+app.get('/get/restaurent/:id', (req, res) => {
+
+  Restaurent.findOne({userId: req.params.id})
+  .then(restaurent => {
+    res.json(restaurent);
+  })
+  .catch(err => res.status(404).json(err));
+}
+
+);
+
+
+//edit store by id
+app.put("/edit/user/:id/:count", async (req, res) => {
+  console.log("m", req.params.tId)
+  User.updateOne({ _id:  req.params.id}, {
+    $set: {
+      scanCount: req.params.count,
+    }
+  }, { upsert: true }, function (err, user) {
+    res.status(200).send({
+      success: 'true',
+      message: 'user updated'
+    })
+  });
+});
+
+
 
 //post store
 app.post('/add/store', async (req, res) => {
