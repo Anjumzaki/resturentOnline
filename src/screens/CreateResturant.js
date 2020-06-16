@@ -129,7 +129,7 @@ export default class Stamp extends React.Component {
 
                         axios
                           .get(
-                            "http://192.168.18.5:3000/get/inviteCode/" +
+                            "http://192.168.0.108:3000/get/inviteCode/" +
                               this.state.code
                           )
                           .then((resp) => {
@@ -137,7 +137,7 @@ export default class Stamp extends React.Component {
                             if (resp.data !== null) {
                               axios
                                 .post(
-                                  "http://192.168.18.5:3000/add/restaurent",
+                                  "http://192.168.0.108:3000/add/restaurent",
                                   {
                                     name: this.state.name,
                                     category: this.state.category,

@@ -58,7 +58,7 @@ class App extends React.Component {
     });
 
     axios
-      .get("http://192.168.18.5:3000/get/restaurent/")
+      .get("http://192.168.0.108:3000/get/restaurent/")
       .then((resp) => this.setState({ restaurents: resp.data }))
       .catch((err) => console.log(err));
   }
