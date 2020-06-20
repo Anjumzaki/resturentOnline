@@ -2,14 +2,14 @@ import firebase from 'firebase';
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDmmgZKxKzWrhBnFwj5S5lms6pLDsvtCiQ",
-  authDomain: "ppass-b3b38.firebaseapp.com",
-  databaseURL: "https://ppass-b3b38.firebaseio.com",
-  projectId: "ppass-b3b38",
-  storageBucket: "ppass-b3b38.appspot.com",
-  messagingSenderId: "183672479547",
-  appId: "1:183672479547:web:d8960763a66ad4f700a11e",
-  measurementId: "G-7X2FBY4SMF"
+  apiKey: "AIzaSyCFWdOUwBgVqsYX3MY46DMJs48XqQm8QXk",
+  authDomain: "ppass-8618e.firebaseapp.com",
+  databaseURL: "https://ppass-8618e.firebaseio.com",
+  projectId: "ppass-8618e",
+  storageBucket: "ppass-8618e.appspot.com",
+  messagingSenderId: "447894832271",
+  appId: "1:447894832271:web:20e22f6b89eec520495cfa",
+  measurementId: "G-3D6FWBJJGL"
 };
 
   const fire = firebase.initializeApp(firebaseConfig);
