@@ -14,6 +14,7 @@ import LatoText from "../components/LatoText";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
@@ -22,10 +23,25 @@ export default class Profile extends React.Component {
     super(props);
     this.state = {
       isSecure: true,
-      image: "https://picsum.photos/300",
+      image: "",
     };
   }
+  pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({
+        image: result.uri,
+      });
+    }
+  };
   render() {
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
@@ -40,13 +56,20 @@ export default class Profile extends React.Component {
               flex: 1,
             }}
           >
-            <View>
+            {this.state.image ? (
               <Image
-                style={{ width: WIDTH, height: HEIGHT / 2.5 }}
-                resizeMode="cover"
+                style={{ width: "100%", height: 200 }}
                 source={{ uri: this.state.image }}
               />
-            </View>
+            ) : (
+              <TouchableOpacity onPress={() => this.pickImage()}>
+                <Image
+                  style={{ width: "100%", height: 200 }}
+                  source={{ uri: "https://picsum.photos/300" }}
+                />
+              </TouchableOpacity>
+            )}
+
             <View style={{ position: "relative", bottom: 55, left: "10%" }}>
               <Image
                 style={{
@@ -57,7 +80,7 @@ export default class Profile extends React.Component {
                   borderWidth: 5,
                 }}
                 resizeMode="cover"
-                source={{ uri: this.state.image }}
+                source={{ uri: "https://picsum.photos/300" }}
               />
             </View>
             <View style={{ paddingHorizontal: 20 }}>
