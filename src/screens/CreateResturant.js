@@ -64,7 +64,8 @@ class Stamp extends React.Component {
       descriptionError: false,
       locationError: false,
       msg: "",
-      resData: false
+      resData: false,
+      id: ""
     };
   }
 
@@ -74,7 +75,25 @@ class Stamp extends React.Component {
     .then(resp => {
       console.log("ssssssss",resp.data)
       if(resp.data !== null){
-        this.setState({resData: true})
+        this.setState({resData: true,
+          id: resp.data._id,
+          name: resp.data.name,
+          category: resp.data.category,
+          phone: resp.data.phoneNumber,
+          price: resp.data.stempPrice,
+          code: resp.data.inviteCode,
+          description: resp.data.description,
+          location: resp.data.address,
+          lat: resp.data.lat,
+          lng: resp.data.lng,
+        })
+        const ref = firebase
+        .storage()
+        .ref("/restaurent_images/"+resp.data._id+".jpg");
+        ref.getDownloadURL().then(url => {
+            console.log("urllllll",url)
+          this.setState({ oldImage: url });
+        }).catch(err => console.log(err));
       }
     })
   }
@@ -160,7 +179,65 @@ class Stamp extends React.Component {
                           .then((resp) => {
                             console.log(resp.data);
                             if (resp.data !== null) {
-                              axios
+                              if(this.state.resData){
+                                axios
+                                .put(
+                                  "http://192.168.0.108:3000/edit/restaurant/"+this.state.id,
+                                  {
+                                    name: this.state.name,
+                                    category: this.state.category,
+                                    phoneNumber: this.state.phone,
+                                    stempPrice: this.state.price,
+                                    inviteCode: this.state.code,
+                                    description: this.state.description,
+                                    address: this.state.location,
+                                    userId: this.props.user.user._id,
+                                    lat: location.lat,
+                                    lng: location.lng,
+                                  }
+                                )
+                                .then(async (resp) => {
+                                  console.log(resp.data);
+                                  if(this.state.menu){
+                                    this.uploadMenu(resp.data.restaurent._id)
+
+                                  }
+
+                                  if(this.state.image){
+                                    const response = await fetch(
+                                      this.state.image
+                                    );
+                                    const blob = await response.blob();
+                                    var ref = firebase
+                                      .storage()
+                                      .ref()
+                                      .child(
+                                        "restaurent_images/" +
+                                          resp.data.restaurent._id +
+                                          ".jpg"
+                                      );
+                                    return ref.put(blob);
+                                    
+                                  }
+                                
+                                  
+                                 
+                                })
+                                .catch((err) => console.log(err));
+                              this.setState({
+                                msg1: "Restaurent added Successfully",
+                                name: "",
+                                category: "",
+                                price: "",
+                                code: "",
+                                description: "",
+                                location: "",
+                                phone: "",
+                                image: ""
+                              });
+
+                              }else{
+                                axios
                                 .post(
                                   "https://warm-plains-33254.herokuapp.com/add/restaurent",
                                   {
@@ -210,7 +287,9 @@ class Stamp extends React.Component {
                                 phone: "",
                                 image: ""
                               });
-                            } else {
+
+                              }
+                         } else {
                               this.setState({ msg: "Invalid Invite Code!" });
                             }
                           });
@@ -268,7 +347,7 @@ class Stamp extends React.Component {
     });
   }
   render() {
-    console.log(this.state);
+    console.log("cr",this.state);
     var array = [1, 2, 3, 4, 5];
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
@@ -277,17 +356,17 @@ class Stamp extends React.Component {
           nameTitle="Create Resturant"
           navigation={this.props.navigation}
         />
-        {this.state.resData ? (
-          <Text style={{textAlign: "center", fontWeight: "bold"}}>You have already created a restaurant</Text>
-        ): (
+        {/* {this.state.resData ? ( */}
+          {/* <Text style={{textAlign: "center", fontWeight: "bold"}}>You have already created a restaurant</Text> */}
+        {/* ): ( */}
         <ScrollView
           keyboardShouldPersistTaps="always"
           listViewDisplayed={false}
         >
-          {this.state.image ? (
+          {this.state.image || this.state.oldImage ? (
             <Image
               style={{ width: "100%", height: 200 }}
-              source={{ uri: this.state.image }}
+              source={{ uri: this.state.oldImage ? this.state.oldImage: this.state.image }}
             />
           ) : (
             <TouchableOpacity onPress={() => this.pickImage()}>
@@ -375,6 +454,7 @@ class Stamp extends React.Component {
                           padding: 0,
                         },
                 }}
+                value={this.state.value}
                 onValueChange={(category) =>
                   this.setState({ category, categoryError: false })
                 }
@@ -599,7 +679,7 @@ class Stamp extends React.Component {
                   },
                 }}
                 listUnderlayColor="green"
-                placeholder="Search locations here"
+                placeholder={this.state.location ? this.state.location : "Search locations here"}
                 autoFocus={false}
                 returnKeyType={"default"}
                 fetchDetails={true}
@@ -667,7 +747,8 @@ class Stamp extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>)}
+        </ScrollView>
+        {/* )} */}
       </SafeAreaView>
     );
   }
