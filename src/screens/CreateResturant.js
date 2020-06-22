@@ -208,6 +208,7 @@ class Stamp extends React.Component {
                                 description: "",
                                 location: "",
                                 phone: "",
+                                image: ""
                               });
                             } else {
                               this.setState({ msg: "Invalid Invite Code!" });

@@ -72,7 +72,7 @@ class Stamp extends React.Component {
           .catch(err => console.log(err))
       }
     }
-    alert("asdas");
+    // alert("asdas");
   };
 
   render() {
