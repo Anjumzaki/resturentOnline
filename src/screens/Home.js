@@ -246,17 +246,17 @@ class App extends React.Component {
               >
                 {this.state.restaurents.map((item, index) => (
                   <TouchableOpacity
-                    onPress={() =>
-                      this.setState({
-                        region: {
-                          latitude: item.lat,
-                          longitude: item.lng,
-                          latitudeDelta: 0.0922,
-                          longitudeDelta: 0.0421,
-                        },
-                      })
+                    onPress={
+                      () =>
+                        this.setState({
+                          region: {
+                            latitude: item.lat,
+                            longitude: item.lng,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421,
+                          },
+                        })
                       // console.log(item.lng.toString().splice(0,7),'asdasd')
-
                     }
                     key={index}
                     style={styles.card}

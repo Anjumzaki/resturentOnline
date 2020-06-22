@@ -10,14 +10,28 @@ import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { getStatusBarHeight } from "react-native-status-bar-height";
+import firebase from "firebase";
+import { bindActionCreators } from "redux";
+import { userAsync } from "../store/actions";
+import { connect } from "react-redux";
 // function CustomDrawerContent(props)
-export default class CustomDrawerContent extends Component {
+class CustomDrawerContent extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       image: "https://picsum.photos/200",
     };
+  }
+
+  componentDidMount(){
+    const ref = firebase
+    .storage()
+    .ref("/profile_images/"+this.props.user.user._id+".jpg");
+    ref.getDownloadURL().then(url => {
+        console.log("urllllll",url)
+      this.setState({ image: url });
+    }).catch(err => console.log(err));
   }
 
   render() {
@@ -61,13 +75,13 @@ export default class CustomDrawerContent extends Component {
               col="#FFFFFF"
               fontName={"robo"}
               fonSiz={20}
-              text={"Anjum Zaki"}
+              text={this.props.user.user.firstName}
             />
             <LatoText
               col="#FFFFFF"
               fontName={"robo"}
               fonSiz={10}
-              text={"zakianjummuneer@gmail.com"}
+              text={this.props.user.user.email}
             />
           </View>
         </TouchableOpacity>
@@ -133,3 +147,19 @@ export default class CustomDrawerContent extends Component {
     );
   }
 }
+
+
+const mapStateToProps = (state) => ({
+  user: state.user.user,
+  loading: state.user.userLoading,
+  error: state.user.userError,
+});
+const mapDispatchToProps = (dispatch, ownProps) =>
+  bindActionCreators(
+    {
+      userAsync,
+    },
+    dispatch
+  );
+
+export default connect(mapStateToProps, mapDispatchToProps)(CustomDrawerContent);

@@ -14,12 +14,14 @@ import LatoText from "../components/LatoText";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import firebase from "firebase";
 import { bindActionCreators } from "redux";
 import { userAsync } from "../store/actions";
 import { connect } from "react-redux";
 import axios from "axios";
+import validator from "email-validator";
 
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
@@ -29,16 +31,17 @@ class Profile extends React.Component {
     super(props);
     this.state = {
       isSecure: true,
-      image: "https://picsum.photos/300",
+      image: "",
+      msg: "",
       firstName: "",
       lastName: "",
+      mobile: "",
       email: "",
-      moble: "",
+      uri: ""
     };
-  } 
+  }
 
   componentDidMount(){
-    console.log("userssssssssss",this.props.user)
     axios.get('http://192.168.0.108:3000/get/user/'+this.props.user.user._id)
     .then(resp => {
       console.log("ssssssss",resp.data)
@@ -49,20 +52,89 @@ class Profile extends React.Component {
           mobile: resp.data.mobile,
           email: resp.data.email,
         })
-        // this.setState({resData: true,
-        //   id: resp.data._id,
-        //   name: resp.data.name,
-        //   category: resp.data.category,
-        //   phone: resp.data.phoneNumber,
-        //   price: resp.data.stempPrice,
-        //   code: resp.data.inviteCode,
-        //   description: resp.data.description,
-        //   location: resp.data.address,
-        //   lat: resp.data.lat,
-        //   lng: resp.data.lng,
-        // })
+        const ref = firebase
+        .storage()
+        .ref("/profile_images/"+this.props.user.user._id+".jpg");
+        ref.getDownloadURL().then(url => {
+            console.log("urllllll",url)
+          this.setState({ uri: url });
+        }).catch(err => console.log(err));
       }
     })
+  }
+  pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({
+        image: result.uri,
+      });
+    }
+  };
+
+  handleUserUpdate(){
+    if (this.state.firstName) {
+      if (this.state.lastName) {
+        if (this.state.mobile) {
+          if (validator.validate(this.state.email.trim())) {
+
+                  axios
+                    .put(
+                      "http://192.168.0.108:3000/edit/user/"+this.props.user.user._id,
+                      {
+                        firstName: this.state.firstName,
+                        lastName: this.state.lastName,
+                        mobile: this.state.mobile,
+                        email: this.state.email
+                      }
+                    )
+                    .then(async (resp) => {
+                      console.log("res", resp.data);
+                      this.setState({
+                        msg: "User Updated Successfully"
+                      })
+                      console.log("beforeeeee")
+                      if(this.state.image){
+                        console.log("in image update")
+                        const response = await fetch(
+                          this.state.image
+                        );
+                        const blob = await response.blob();
+                        var ref = firebase
+                          .storage()
+                          .ref()
+                          .child(
+                            "profile_images/" +
+                            this.props.user.user._id +
+                              ".jpg"
+                          );
+                         
+                        return ref.put(blob);
+                        
+                      }
+                     
+                    })
+                    .catch((err) => console.log(err));
+                
+          } else {
+            this.setState({ msg: "Please Enter Correct Email" });
+          }
+        } else {
+          this.setState({ msg: "Please Enter Telephone" });
+        }
+      } else {
+        this.setState({ msg: "Please Enter Last Name" });
+      }
+    } else {
+      this.setState({ msg: "Please Enter First Name" });
+    }
   }
   render() {
     return (
@@ -78,14 +150,21 @@ class Profile extends React.Component {
               flex: 1,
             }}
           >
-            <View>
+            {this.state.image ? (
               <Image
-                style={{ width: WIDTH, height: HEIGHT / 2.5 }}
-                resizeMode="cover"
+                style={{ width: "100%", height: 200 }}
                 source={{ uri: this.state.image }}
               />
-            </View>
-            <View style={{ position: "relative", bottom: 55, left: "10%" }}>
+            ) : (
+              <TouchableOpacity onPress={() => this.pickImage()}>
+                <Image
+                  style={{ width: "100%", height: 200 }}
+                  source={{ uri: "https://picsum.photos/300" }}
+                />
+              </TouchableOpacity>
+            )}
+
+            {/* <View style={{ position: "relative", bottom: 55, left: "10%" }}>
               <Image
                 style={{
                   width: 110,
@@ -95,9 +174,9 @@ class Profile extends React.Component {
                   borderWidth: 5,
                 }}
                 resizeMode="cover"
-                source={{ uri: this.state.image }}
+                source={{ uri: "https://picsum.photos/300" }}
               />
-            </View>
+            </View> */}
             <View style={{ paddingHorizontal: 20 }}>
               <View style={inStyles.simplePro}>
                 <Image
@@ -175,7 +254,10 @@ class Profile extends React.Component {
                   color="#9E9E9E"
                 />
               </View>
-              <TouchableOpacity style={[btnStyles.basic, { marginTop: 20 }]}>
+              <Text style={{ textAlign: "center", color: "green" }}>
+              {this.state.msg}
+            </Text>
+              <TouchableOpacity style={[btnStyles.basic, { marginTop: 20 }]} onPress={() => this.handleUserUpdate()}>
                 <LatoText
                   fontName="robo"
                   col="white"
