@@ -57,7 +57,7 @@ export default class Login extends React.Component {
                 shadowRadius: 4.65,
                 elevation: 8,
                 backgroundColor: "white",
-                borderRadius:10
+                borderRadius: 10,
               }}
             >
               <View style={{ alignItems: "center", marginVertical: 20 }}>

@@ -27,7 +27,7 @@ import * as Permissions from "expo-permissions";
 import { bindActionCreators } from "redux";
 import { userAsync } from "../store/actions";
 import { connect } from "react-redux";
-import axios from "axios"
+import axios from "axios";
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 class Stamp extends React.Component {
@@ -38,17 +38,22 @@ class Stamp extends React.Component {
       hasCameraPermission: null,
       lastScannedUrl: null,
       isUser: false,
-      flag: true
+      flag: true,
+      resData: "",
     };
   }
 
   componentDidMount() {
-    if(this.props.user.user.type === "User"){
-       this.setState({isUser: true})
+    if (this.props.user.user.type === "User") {
+      this.setState({ isUser: true });
     }
     this._requestCameraPermission();
-    axios.get('http://192.168.0.108:3000/get/restaurent/'+this.props.user.user._id)
-    .then(resp => this.setState({resData: resp.data}))
+    axios
+      .get(
+        "https://warm-plains-33254.herokuapp.com/get/restaurent/" +
+          this.props.user.user._id
+      )
+      .then((resp) => this.setState({ resData: resp.data }));
   }
 
   _requestCameraPermission = async () => {
@@ -76,11 +81,11 @@ class Stamp extends React.Component {
   };
 
   render() {
-    console.log("State", this.state, this.props.user)
+    console.log("State", this.state, this.props.user);
     var array = [];
 
-    for(var i=0; i<this.props.user.user.scanCount; i++){
-        array.push(i)
+    for (var i = 0; i < this.props.user.user.scanCount; i++) {
+      array.push(i);
     }
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
@@ -121,25 +126,54 @@ class Stamp extends React.Component {
               ))}
             </View>
           )}
-          {this.state.isUser ? (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {this.state.hasCameraPermission === null ? (
-                <Text>Requesting for camera permission</Text>
-              ) : this.state.hasCameraPermission === false ? (
-                <Text style={{ color: "#fff" }}>
-                  Camera permission is not granted
-                </Text>
+          {this.state.isUser && (
+            <View style={{ alignItems: "center", paddingHorizontal: 20 }}>
+              <LatoText
+                fontName="robo"
+                col="black"
+                fonSiz={20}
+                text={"Sie haben " + this.props.user.user.scanCount + " Stempel"}
+              />
+              {this.props.user.user.scanCount > 10 ? (
+                <LatoText
+                  fontName="robo"
+                  col="black"
+                  fonSiz={20}
+                  text={"Scan your stamp and get the free meal"}
+                />
               ) : (
-                <BarCodeScanner
-                  onBarCodeScanned={this.handleBarCodeScanned}
-                  style={{ width: "150%", height: "100%" }}
+                <LatoText
+                  fontName="robo"
+                  col="black"
+                  fonSiz={20}
+                  text={
+                    "Sie brauchen noch  " +
+                    (10 - this.props.user.user.scanCount) +
+                    " um ein kostenloses Essen zubekommen."
+                  }
                 />
               )}
+            </View>
+          )}
+
+          {this.state.isUser ? (
+            <View style={{ alignItems: "center" }}>
+              <TouchableOpacity
+                onPress={() =>
+                  this.props.navigation.navigate("QrCodeScreen", {
+                    count: this.props.user.user.scanCount,
+                    user: this.props.user.user._id,
+                  })
+                }
+                style={[btnStyles.basic, { paddingHorizontal: 20 }]}
+              >
+                <LatoText
+                  fontName="robo"
+                  col="white"
+                  fonSiz={20}
+                  text={"Scan the Qr Here"}
+                />
+              </TouchableOpacity>
             </View>
           ) : (
             <View
@@ -155,13 +189,19 @@ class Stamp extends React.Component {
                 bgColor="black"
                 fgColor="white"
               />
-              <View style={{ paddingVertical: 30 }}>
-                {/* <LatoText
+              <View style={{ paddingVertical: 30, paddingHorizontal: 20 }}>
+                <LatoText
                   fontName="robo"
                   col="black"
                   fonSiz={18}
-                  text={"Recive "+this.state.resData ?  this.state.resData.stempPrice: 0+"$ from customer"}
-                /> */}
+                  text={
+                    // "Reciasdve " +
+                    // (this.state.resData
+                    //   ? this.state.resData.stempPrice
+                    //   : 0 + "$ from customer")
+                    "Diesen Qr-Code bitte den Kunden zeigen"
+                  }
+                />
               </View>
             </View>
           )}

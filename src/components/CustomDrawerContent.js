@@ -39,7 +39,7 @@ export default class CustomDrawerContent extends Component {
             backgroundColor: "#5072B1",
             paddingTop: getStatusBarHeight() + 20,
           }}
-          onPress={()=>this.props.navigation.navigate('Profile')}
+          onPress={() => this.props.navigation.navigate("Profile")}
         >
           <View>
             {this.state.image != "" && (
@@ -79,7 +79,8 @@ export default class CustomDrawerContent extends Component {
             marginVertical: 40,
           }}
         />
-        <View
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate("Impressions")}
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -93,10 +94,8 @@ export default class CustomDrawerContent extends Component {
             size={26}
             color="#707070"
           />
-          <Text style={{ fontWeight: "700", color: "#707070" }}>
-            Privacy Policy
-          </Text>
-        </View>
+          <Text style={{ fontWeight: "700", color: "#707070" }}>Impressum</Text>
+        </TouchableOpacity>
         <View
           style={{
             flexDirection: "row",
@@ -113,7 +112,8 @@ export default class CustomDrawerContent extends Component {
           />
           <Text style={{ fontWeight: "700", color: "#707070" }}>Rate Us</Text>
         </View>
-        <View
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate("Login")}
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -128,7 +128,7 @@ export default class CustomDrawerContent extends Component {
             color="#707070"
           />
           <Text style={{ fontWeight: "700", color: "#707070" }}>Logout</Text>
-        </View>
+        </TouchableOpacity>
       </DrawerContentScrollView>
     );
   }

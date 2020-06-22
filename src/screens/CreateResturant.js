@@ -70,7 +70,7 @@ class Stamp extends React.Component {
 
   componentDidMount() {
     this._requestCameraPermission();
-    axios.get('http://192.168.0.108:3000/get/restaurent/'+this.props.user.user._id)
+    axios.get('https://warm-plains-33254.herokuapp.com/get/restaurent/'+this.props.user.user._id)
     .then(resp => {
       console.log("ssssssss",resp.data)
       if(resp.data !== null){
@@ -154,7 +154,7 @@ class Stamp extends React.Component {
 
                         axios
                           .get(
-                            "http://192.168.0.108:3000/get/inviteCode/" +
+                            "https://warm-plains-33254.herokuapp.com/get/inviteCode/" +
                               this.state.code
                           )
                           .then((resp) => {
@@ -162,7 +162,7 @@ class Stamp extends React.Component {
                             if (resp.data !== null) {
                               axios
                                 .post(
-                                  "http://192.168.0.108:3000/add/restaurent",
+                                  "https://warm-plains-33254.herokuapp.com/add/restaurent",
                                   {
                                     name: this.state.name,
                                     category: this.state.category,

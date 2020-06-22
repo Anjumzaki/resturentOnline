@@ -10,11 +10,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { conStyles, inStyles, btnStyles } from "../styles/styles";
 import LatoText from "../components/LatoText";
-import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
-import axios from 'axios';
-import validator from 'email-validator';
+import axios from "axios";
+import validator from "email-validator";
 import { bindActionCreators } from "redux";
 import { userAsync } from "../store/actions";
 import { connect } from "react-redux";
@@ -28,45 +27,53 @@ class Login extends React.Component {
       isSecure: true,
       email: "",
       password: "",
-      msg: ''
+      msg: "",
     };
   }
 
-  handleLogin(){
-    console.log("Sdsd")
-          if(validator.validate(this.state.email.trim())){
-            if(this.state.password){
-                    axios.post('http://192.168.0.108:3000/api/users/signin', {
-                      password: this.state.password,
-                      email: this.state.email,
-                    })
-                    .then(resp => {
-                      console.log('res',resp.data)
-                      if(resp.data.user){
-                        this.setState({
-                          email: "",
-                          password: ""
-                        })
-                        this.props.userAsync(resp.data)
-                        this.props.navigation.push('App')
-                      }else{
-                        this.setState({msg: resp.data})
-                      }
-                     
-                    }).catch(err => console.log(err))
-           
-            }else{
-              this.setState({msg: "Please Enter Password"})
+  handleLogin() {
+    if (validator.validate(this.state.email.trim())) {
+      if (this.state.password) {
+        axios
+          .post("https://warm-plains-33254.herokuapp.com/api/users/signin", {
+            password: this.state.password,
+            email: this.state.email,
+          })
+          .then((resp) => {
+            console.log("res", resp.data);
+            if (resp.data.user) {
+              this.setState(
+                {
+                  isSecure: true,
+                  email: "",
+                  password: "",
+                  msg: "",
+                },
+                () => {
+                  this.props.userAsync(resp.data);
+                  this.props.navigation.push("App");
+                }
+              );
+            } else {
+              this.setState({ msg: resp.data });
             }
-          }else{
-            this.setState({msg: "Please Enter Correct Email"})
-          }
-
-    
-    
+          })
+          .catch((err) => console.log(err));
+      } else {
+        this.setState({ msg: "Please Enter Password" });
+      }
+    } else {
+      this.setState({ msg: "Please Enter Correct Email" });
+    }
+  }
+  componentDidMount() {
+    this._unsubscribe = this.props.navigation.addListener("focus", () => {});
+  }
+  componentWillUnmount() {
+    this._unsubscribe();
   }
   render() {
-    console.log(this.state)
+    console.log(this.state);
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
         <ScrollView
@@ -110,8 +117,7 @@ class Login extends React.Component {
                   autoCapitalize={"none"}
                   style={inStyles.innerFeild}
                   keyboardType="email-address"
-                  onChangeText={(email) => this.setState({email})}
-
+                  onChangeText={(email) => this.setState({ email })}
                 />
                 <MaterialCommunityIcons
                   style={inStyles.inputIcon}
@@ -133,8 +139,7 @@ class Login extends React.Component {
                   secureTextEntry={this.state.isSecure}
                   autoCapitalize={"none"}
                   style={inStyles.innerFeild}
-                  onChangeText={(password) => this.setState({password})}
-
+                  onChangeText={(password) => this.setState({ password })}
                 />
                 <TouchableHighlight
                   underlayColor="transparent"
@@ -163,9 +168,14 @@ class Login extends React.Component {
                   )}
                 </TouchableHighlight>
               </View>
-              <Text style={{textAlign: "center", color: "red"}}>{this.state.msg}</Text>
+              <Text style={{ textAlign: "center", color: "red" }}>
+                {this.state.msg}
+              </Text>
 
-              <TouchableOpacity onPress={()=> this.handleLogin() } style={btnStyles.basic}>
+              <TouchableOpacity
+                onPress={() => this.handleLogin()}
+                style={btnStyles.basic}
+              >
                 <LatoText
                   fontName="robo"
                   col="white"
@@ -174,7 +184,7 @@ class Login extends React.Component {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-              onPress={()=>this.props.navigation.push('ForgotPass')}
+                onPress={() => this.props.navigation.push("ForgotPass")}
                 style={{ alignItems: "flex-end", paddingTop: 5 }}
               >
                 <LatoText
@@ -219,7 +229,10 @@ class Login extends React.Component {
                 />
               </View>
 
-              <TouchableOpacity onPress={()=>this.props.navigation.navigate('Register')} style={btnStyles.basic}>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("Register")}
+                style={btnStyles.basic}
+              >
                 <LatoText
                   fontName="robo"
                   col="white"
@@ -235,21 +248,17 @@ class Login extends React.Component {
   }
 }
 
-
-const mapStateToProps = state => ({
-  user: state.user.user, 
+const mapStateToProps = (state) => ({
+  user: state.user.user,
   loading: state.user.userLoading,
-  error: state.user.userError
+  error: state.user.userError,
 });
 const mapDispatchToProps = (dispatch, ownProps) =>
   bindActionCreators(
-      {
-        userAsync
-      },
-      dispatch
+    {
+      userAsync,
+    },
+    dispatch
   );
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

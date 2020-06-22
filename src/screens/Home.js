@@ -46,7 +46,7 @@ class App extends React.Component {
       restaurents: [],
     };
   }
-  async componentDidMount() { 
+  async componentDidMount() {
     console.log("redux data", this.props.user);
     let { status } = await Location.requestPermissionsAsync();
     if (status !== "granted") {
@@ -57,10 +57,19 @@ class App extends React.Component {
       location,
     });
 
+    this._unsubscribe = this.props.navigation.addListener("focus", () => {
+      axios
+        .get("https://warm-plains-33254.herokuapp.com/get/restaurent/")
+        .then((resp) => this.setState({ restaurents: resp.data }))
+        .catch((err) => console.log(err));
+    });
     axios
-      .get("http://192.168.0.108:3000/get/restaurent/")
+      .get("https://warm-plains-33254.herokuapp.com/get/restaurent/")
       .then((resp) => this.setState({ restaurents: resp.data }))
       .catch((err) => console.log(err));
+  }
+  componentWillUnmount() {
+    this._unsubscribe();
   }
   onMyLocation = async () => {
     let region = await Location.getCurrentPositionAsync({});
@@ -242,10 +251,12 @@ class App extends React.Component {
                         region: {
                           latitude: item.lat,
                           longitude: item.lng,
-                          latitudeDelta: item.lat,
-                          longitudeDelta: item.lng,
+                          latitudeDelta: 0.0922,
+                          longitudeDelta: 0.0421,
                         },
                       })
+                      // console.log(item.lng.toString().splice(0,7),'asdasd')
+
                     }
                     key={index}
                     style={styles.card}

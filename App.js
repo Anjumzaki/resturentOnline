@@ -18,7 +18,9 @@ import CustomDrawerContent from "./src/components/CustomDrawerContent";
 import { AntDesign } from "@expo/vector-icons";
 import CreateResturant from "./src/screens/CreateResturant";
 import ViewResturant from "./src/screens/ViewResturant";
-
+import QrCodeScreen from "./src/screens/QrCodeScreen";
+import PrivacyPolicy from "./src/screens/PrivacyPolicy";
+import Impressions from "./src/screens/Impressions";
 import store from "./src/store";
 import { Provider as StoreProvider } from "react-redux";
 import Fire from "./src/config/Fire";
@@ -30,6 +32,7 @@ function LoginAuth() {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="ForgotPass" component={ForgotPass} />
+      <HomeRoutes.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
 
       {/* <Stack.Screen name="Notifications" component={Notifications} />
       <Stack.Screen name="Profile" component={Profile} />
@@ -44,7 +47,7 @@ function HomeSreen() {
     <HomeRoutes.Navigator headerMode="none">
       <HomeRoutes.Screen
         name="Home"
-        options={{ title: "Resturants" }}
+        options={{ title: "Restaurant" }}
         component={Home}
       />
       <HomeRoutes.Screen name="Profile" component={Profile} />
@@ -52,6 +55,9 @@ function HomeSreen() {
       <HomeRoutes.Screen name="News" component={News} />
       <HomeRoutes.Screen name="Create Resturant" component={CreateResturant} />
       <HomeRoutes.Screen name="View Resturant" component={ViewResturant} />
+      <HomeRoutes.Screen name="QrCodeScreen" component={QrCodeScreen} />
+      <HomeRoutes.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+      <HomeRoutes.Screen name="Impressions" component={Impressions} />
     </HomeRoutes.Navigator>
   );
 }
@@ -89,7 +95,7 @@ const TabsScreen = () => (
   >
     <Tabs.Screen
       name="Home"
-      options={{ title: "Resturants" }}
+      options={{ title: "Restaurant" }}
       component={HomeSreen}
     />
     <Tabs.Screen name="Profile" component={Profile} />
@@ -185,13 +191,17 @@ const DrawerScreen = () => (
   >
     <Drawer.Screen
       name="Home"
-      options={{ title: "Resturants" }}
+      options={{ title: "Restaurants" }}
       component={TabsScreen}
     />
     <Drawer.Screen name="News" component={News} />
-    <Drawer.Screen name="Create Resturant" component={CreateResturant} />
+    <Drawer.Screen
+      options={{ title: "Create Restaurant" }}
+      name="Create Resturant"
+      component={CreateResturant}
+    />
     <Drawer.Screen name="Stempelkarte" component={Stamp} />
-    <Drawer.Screen name="Terms & Conditions" component={TabsScreen} />
+    <Drawer.Screen name="Terms & Conditions" component={PrivacyPolicy} />
   </Drawer.Navigator>
 );
 const RootStack = createStackNavigator();
