@@ -47,7 +47,6 @@ class App extends React.Component {
     };
   }
   async componentDidMount() {
-    console.log("redux data", this.props.user);
     let { status } = await Location.requestPermissionsAsync();
     if (status !== "granted") {
       setErrorMsg("Permission to access location was denied");

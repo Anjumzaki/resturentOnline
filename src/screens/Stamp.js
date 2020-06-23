@@ -81,7 +81,6 @@ class Stamp extends React.Component {
   };
 
   render() {
-    console.log("State", this.state, this.props.user);
     var array = [];
 
     for (var i = 0; i < this.props.user.user.scanCount; i++) {

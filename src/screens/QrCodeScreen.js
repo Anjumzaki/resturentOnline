@@ -19,7 +19,6 @@ export default class QrCodeScreen extends React.Component {
     });
   }
   handleBarCodeScanned = (result) => {
-    console.log(result, "result");
     if (result.data !== this.state.lastScannedUrl && this.state.flag) {
       this.setState({ flag: false });
       LayoutAnimation.spring();

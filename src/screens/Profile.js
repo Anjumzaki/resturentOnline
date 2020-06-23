@@ -37,30 +37,35 @@ class Profile extends React.Component {
       lastName: "",
       mobile: "",
       email: "",
-      uri: ""
+      uri: "",
     };
   }
 
-  componentDidMount(){
-    axios.get('http://192.168.0.108:3000/get/user/'+this.props.user.user._id)
-    .then(resp => {
-      console.log("ssssssss",resp.data)
-      if(resp.data !== null){
-        this.setState({
-          firstName: resp.data.firstName,
-          lastName: resp.data.lastName,
-          mobile: resp.data.mobile,
-          email: resp.data.email,
-        })
-        const ref = firebase
-        .storage()
-        .ref("/profile_images/"+this.props.user.user._id+".jpg");
-        ref.getDownloadURL().then(url => {
-            console.log("urllllll",url)
-          this.setState({ uri: url });
-        }).catch(err => console.log(err));
-      }
-    })
+  componentDidMount() {
+    axios
+      .get(
+        "https://warm-plains-33254.herokuapp.com/get/user/" +
+          this.props.user.user._id
+      )
+      .then((resp) => {
+        if (resp.data !== null) {
+          this.setState({
+            firstName: resp.data.firstName,
+            lastName: resp.data.lastName,
+            mobile: resp.data.mobile,
+            email: resp.data.email,
+          });
+          const ref = firebase
+            .storage()
+            .ref("/profile_images/" + this.props.user.user._id + ".jpg");
+          ref
+            .getDownloadURL()
+            .then((url) => {
+              this.setState({ uri: url });
+            })
+            .catch((err) => console.log(err));
+        }
+      });
   }
   pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -70,7 +75,6 @@ class Profile extends React.Component {
       quality: 1,
     });
 
-    console.log(result);
 
     if (!result.cancelled) {
       this.setState({
@@ -79,50 +83,40 @@ class Profile extends React.Component {
     }
   };
 
-  handleUserUpdate(){
+  handleUserUpdate() {
     if (this.state.firstName) {
       if (this.state.lastName) {
         if (this.state.mobile) {
           if (validator.validate(this.state.email.trim())) {
+            axios
+              .put(
+                "http://192.168.0.108:3000/edit/user/" +
+                  this.props.user.user._id,
+                {
+                  firstName: this.state.firstName,
+                  lastName: this.state.lastName,
+                  mobile: this.state.mobile,
+                  email: this.state.email,
+                }
+              )
+              .then(async (resp) => {
+                this.setState({
+                  msg: "User Updated Successfully",
+                });
+                if (this.state.image) {
+                  const response = await fetch(this.state.image);
+                  const blob = await response.blob();
+                  var ref = firebase
+                    .storage()
+                    .ref()
+                    .child(
+                      "profile_images/" + this.props.user.user._id + ".jpg"
+                    );
 
-                  axios
-                    .put(
-                      "http://192.168.0.108:3000/edit/user/"+this.props.user.user._id,
-                      {
-                        firstName: this.state.firstName,
-                        lastName: this.state.lastName,
-                        mobile: this.state.mobile,
-                        email: this.state.email
-                      }
-                    )
-                    .then(async (resp) => {
-                      console.log("res", resp.data);
-                      this.setState({
-                        msg: "User Updated Successfully"
-                      })
-                      console.log("beforeeeee")
-                      if(this.state.image){
-                        console.log("in image update")
-                        const response = await fetch(
-                          this.state.image
-                        );
-                        const blob = await response.blob();
-                        var ref = firebase
-                          .storage()
-                          .ref()
-                          .child(
-                            "profile_images/" +
-                            this.props.user.user._id +
-                              ".jpg"
-                          );
-                         
-                        return ref.put(blob);
-                        
-                      }
-                     
-                    })
-                    .catch((err) => console.log(err));
-                
+                  return ref.put(blob);
+                }
+              })
+              .catch((err) => console.log(err));
           } else {
             this.setState({ msg: "Please Enter Correct Email" });
           }
@@ -188,7 +182,7 @@ class Profile extends React.Component {
                   style={inStyles.innerFeildPro}
                   value={this.state.firstName}
                   placeholder="Your First Name"
-                  onChangeText={(firstName) => this.setState({firstName})}
+                  onChangeText={(firstName) => this.setState({ firstName })}
                 />
                 <MaterialCommunityIcons
                   style={inStyles.inputIconPro}
@@ -207,7 +201,7 @@ class Profile extends React.Component {
                   style={inStyles.innerFeildPro}
                   placeholder="Your Last Name"
                   value={this.state.lastName}
-                  onChangeText={(lastName) => this.setState({lastName})}
+                  onChangeText={(lastName) => this.setState({ lastName })}
                 />
                 <MaterialCommunityIcons
                   style={inStyles.inputIconPro}
@@ -226,7 +220,7 @@ class Profile extends React.Component {
                   style={inStyles.innerFeildPro}
                   placeholder="Your Email"
                   value={this.state.email}
-                  onChangeText={(email) => this.setState({email})}
+                  onChangeText={(email) => this.setState({ email })}
                 />
                 <MaterialCommunityIcons
                   style={inStyles.inputIconPro}
@@ -245,7 +239,7 @@ class Profile extends React.Component {
                   style={inStyles.innerFeildPro}
                   placeholder="Your Mobile"
                   value={this.state.mobile}
-                  onChangeText={(mobile) => this.setState({mobile})}
+                  onChangeText={(mobile) => this.setState({ mobile })}
                 />
                 <MaterialCommunityIcons
                   style={inStyles.inputIconPro}
@@ -255,9 +249,12 @@ class Profile extends React.Component {
                 />
               </View>
               <Text style={{ textAlign: "center", color: "green" }}>
-              {this.state.msg}
-            </Text>
-              <TouchableOpacity style={[btnStyles.basic, { marginTop: 20 }]} onPress={() => this.handleUserUpdate()}>
+                {this.state.msg}
+              </Text>
+              <TouchableOpacity
+                style={[btnStyles.basic, { marginTop: 20 }]}
+                onPress={() => this.handleUserUpdate()}
+              >
                 <LatoText
                   fontName="robo"
                   col="white"

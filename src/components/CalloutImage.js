@@ -8,12 +8,10 @@ class CalloutImage extends React.Component {
     image: "",
   };
   async componentDidMount() {
-    console.log("id", this.props.id);
     const ref = firebase
     .storage()
-    .ref("/restaurent_images/"+this.props.id+".jpg");
+    .ref("restaurent_images/"+this.props.id+".jpg");
   ref.getDownloadURL().then(url => {
-      console.log("urllllll",url)
     this.setState({ image: url });
   }).catch(err => console.log(err));
   }

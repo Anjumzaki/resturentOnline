@@ -25,7 +25,9 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import RNPickerSelect from "react-native-picker-select";
 import axios from "axios";
 import Geocoder from "react-native-geocoding";
-import FullResturantImage from '../components/FullResturantImage'
+import FullResturantImage from "../components/FullResturantImage";
+import RestuarantMenu from "../components/RestuarantMenu";
+
 import firebase from "firebase";
 Geocoder.init("AIzaSyCYwrgArmp1NxJsU8LsgVKu5De5uCx57dI");
 const WIDTH = Dimensions.get("screen").width;
@@ -74,11 +76,9 @@ export default class Stamp extends React.Component {
       location: rest.address,
       phone: rest.phoneNumber,
     });
-    // this._requestCameraPermission();
   }
 
   render() {
-    console.log(this.state);
     var array = [1, 2, 3, 4, 5];
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
@@ -91,7 +91,7 @@ export default class Stamp extends React.Component {
           keyboardShouldPersistTaps="always"
           listViewDisplayed={false}
         >
-          <FullResturantImage id={this.props.route.params.item._id}/>
+          <FullResturantImage id={this.props.route.params.item._id} />
           <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
             <View>
               <View
@@ -327,6 +327,7 @@ export default class Stamp extends React.Component {
                 editable={false}
               />
             </View>
+            <RestuarantMenu id={this.props.route.params.item._id} />
           </View>
         </ScrollView>
       </SafeAreaView>

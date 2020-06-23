@@ -40,7 +40,6 @@ class Login extends React.Component {
             email: this.state.email,
           })
           .then((resp) => {
-            console.log("res", resp.data);
             if (resp.data.user) {
               this.setState(
                 {
@@ -73,7 +72,6 @@ class Login extends React.Component {
     this._unsubscribe();
   }
   render() {
-    console.log(this.state);
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
         <ScrollView

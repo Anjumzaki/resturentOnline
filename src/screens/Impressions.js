@@ -50,7 +50,7 @@ export default class Impressions extends React.Component {
             fontName="robo"
             col="#5072B1"
             fonSiz={18}
-            text={"Einwilligungserklärung zur Speicherung von Daten"}
+            text={"Ppass GbR"}
           />
           <View style={{ marginTop: 20 }} />
 
@@ -58,9 +58,7 @@ export default class Impressions extends React.Component {
             fontName="robo"
             col="gray"
             fonSiz={14}
-            text={
-              "Ich willige ein, dass die PPass App meine personenbezogenen Daten für das Pflegen der Nutzerbedürfnisse und Marketing-Unterstützung der Unternehmen speichern darf. "
-            }
+            text={"Mariahilfstrabe 9"}
           />
           <View style={{ marginTop: 20 }} />
 
@@ -68,7 +66,7 @@ export default class Impressions extends React.Component {
             fontName="robo"
             col="gray"
             fonSiz={18}
-            text={"Folgende Daten werden aufgenommen und gespeichert:"}
+            text={"94032 Passau"}
           />
           <View style={{ marginTop: 20 }} />
 
@@ -76,7 +74,7 @@ export default class Impressions extends React.Component {
             fontName="robo"
             col="gray"
             fonSiz={14}
-            text={"Vor- & Nachname, Telefonnummer und E-Mail-Adresse"}
+            text={"Tel:0171-2275527"}
           />
           <View style={{ marginTop: 20 }} />
 
@@ -84,18 +82,7 @@ export default class Impressions extends React.Component {
             fontName="robo"
             col="gray"
             fonSiz={14}
-            text={
-              "Die personenbezogenen Daten werden nach dem Austritt noch ein weiteres Jahr gespeichert und nach Ablauf der Frist gelöscht."
-            }
-          />
-          <View style={{ marginTop: 20 }} />
-          <LatoText
-            fontName="robo"
-            col="gray"
-            fonSiz={14}
-            text={
-              "Auf die personenbezogenen Daten hat nur die Geschäftsführung Zugriff. Die Weiterleitung an Dritte erfolgt nicht. Die Daten werden auch nicht in Internet gestellt. "
-            }
+            text={"E-Mail:info@knusbrecht@gmail.com"}
           />
         </ScrollView>
       </View>

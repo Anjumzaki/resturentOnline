@@ -21,6 +21,7 @@
     "expo": "~37.0.3",
     "expo-barcode-scanner": "~8.1.0",
     "expo-image-picker": "~8.1.0",
+    "expo-splash-screen": "^0.2.3",
     "firebase": "^7.15.1",
     "native-base": "^2.13.12",
     "react": "~16.9.0",

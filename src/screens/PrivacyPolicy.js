@@ -38,7 +38,7 @@ export default class PrivacyPolicy extends React.Component {
             paddingTop: 50,
             backgroundColor: "white",
             paddingHorizontal: 20,
-            paddingVertical: 20,
+            paddingBottom:200
           }}
         >
           <LatoText
@@ -162,7 +162,7 @@ export default class PrivacyPolicy extends React.Component {
           <LatoText
             fontName="robo"
             col="gray"
-            fonSiz={18}
+            fonSiz={20}
             text={"6. Urheberrecht"}
           />
           <View style={{ marginTop: 20 }} />
@@ -170,7 +170,7 @@ export default class PrivacyPolicy extends React.Component {
           <LatoText
             fontName="robo"
             col="gray"
-            fonSiz={18}
+            fonSiz={14}
             text={
               "Bei den zusammengestellten Inhalten der App handelt es sich um eigens von PPass hergestellte Datenbankwerke.PPass ist Rechteinhaber bezüglich aller sonstigen Elemente der App, insbesondere hinsichtlich der Nutzungs- und Leistungsschutzrechte an Inhalten und Dokumenten."
             }
@@ -188,7 +188,7 @@ export default class PrivacyPolicy extends React.Component {
           <LatoText
             fontName="robo"
             col="gray"
-            fonSiz={18}
+            fonSiz={14}
             text={
               "Es gilt ausschließlich das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts. Sollten einzelne dieser Bestimmungen unwirksam sein oder nachträglich unwirksam werden, berührt dies nicht die Gültigkeit der Bestimmungen insgesamt."
             }

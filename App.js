@@ -1,6 +1,6 @@
 import "react-native-gesture-handler";
 import * as React from "react";
-import { Text } from "react-native";
+import { Text, View, Image } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import Login from "./src/screens/Login";
@@ -24,6 +24,8 @@ import Impressions from "./src/screens/Impressions";
 import store from "./src/store";
 import { Provider as StoreProvider } from "react-redux";
 import Fire from "./src/config/Fire";
+import * as SplashScreen from "expo-splash-screen";
+import { Asset } from "expo-asset";
 const Stack = createStackNavigator();
 
 function LoginAuth() {
@@ -194,7 +196,7 @@ const DrawerScreen = () => (
       options={{ title: "Restaurants" }}
       component={TabsScreen}
     />
-    <Drawer.Screen name="News" component={News} />
+    {/* <Drawer.Screen name="News" component={News} /> */}
     <Drawer.Screen
       options={{ title: "Create Restaurant" }}
       name="Create Resturant"
@@ -224,12 +226,65 @@ const RootStackScreen = ({ userToken }) => (
     />
   </RootStack.Navigator>
 );
-export default function App() {
-  return (
-    <StoreProvider store={store}>
-      <NavigationContainer>
-        <RootStackScreen />
-      </NavigationContainer>
-    </StoreProvider>
-  );
+export default class App extends React.Component {
+  state = {
+    isReady: false,
+  };
+
+  componentDidMount() {
+    SplashScreen.preventAutoHideAsync();
+  }
+
+  render() {
+    if (!this.state.isReady) {
+      return (
+        <View style={{ flex: 1 }}>
+          <Image
+            source={require("./assets/splash.gif")}
+            onLoad={this._cacheResourcesAsync}
+          />
+        </View>
+      );
+    }
+
+    return (
+      <StoreProvider store={store}>
+        <NavigationContainer>
+          <RootStackScreen />
+        </NavigationContainer>
+      </StoreProvider>
+    );
+  }
+
+  _cacheSplashResourcesAsync = async () => {
+    const gif = require("./assets/splash.gif");
+    return Asset.fromModule(gif).downloadAsync();
+  };
+
+  _cacheResourcesAsync = async () => {
+    SplashScreen.hideAsync();
+    const images = [
+      require("./src/assets/1.jpg"),
+      require("./src/assets/2.jpg"),
+      require("./src/assets/3.jpg"),
+      require("./src/assets/4.jpg"),
+      require("./src/assets/google.png"),
+      require("./src/assets/loginWith.png"),
+      require("./src/assets/message.png"),
+      require("./src/assets/new.png"),
+      require("./src/assets/phone.png"),
+      require("./src/assets/pin.png"),
+      require("./src/assets/profile.png"),
+      require("./src/assets/restu.png"),
+      require("./src/assets/stemp.png"),
+      require("./src/assets/upper.png"),
+    ];
+
+    const cacheImages = images.map((image) => {
+      return Asset.fromModule(image).downloadAsync();
+    });
+
+    await Promise.all(cacheImages);
+    this.setState({ isReady: true });
+  };
 }

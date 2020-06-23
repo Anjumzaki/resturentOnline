@@ -65,37 +65,43 @@ class Stamp extends React.Component {
       locationError: false,
       msg: "",
       resData: false,
-      id: ""
+      id: "",
     };
   }
 
   componentDidMount() {
     this._requestCameraPermission();
-    axios.get('https://warm-plains-33254.herokuapp.com/get/restaurent/'+this.props.user.user._id)
-    .then(resp => {
-      console.log("ssssssss",resp.data)
-      if(resp.data !== null){
-        this.setState({resData: true,
-          id: resp.data._id,
-          name: resp.data.name,
-          category: resp.data.category,
-          phone: resp.data.phoneNumber,
-          price: resp.data.stempPrice,
-          code: resp.data.inviteCode,
-          description: resp.data.description,
-          location: resp.data.address,
-          lat: resp.data.lat,
-          lng: resp.data.lng,
-        })
-        const ref = firebase
-        .storage()
-        .ref("/restaurent_images/"+resp.data._id+".jpg");
-        ref.getDownloadURL().then(url => {
-            console.log("urllllll",url)
-          this.setState({ oldImage: url });
-        }).catch(err => console.log(err));
-      }
-    })
+    axios
+      .get(
+        "https://warm-plains-33254.herokuapp.com/get/restaurent/" +
+          this.props.user.user._id
+      )
+      .then((resp) => {
+        if (resp.data !== null) {
+          this.setState({
+            resData: true,
+            id: resp.data._id,
+            name: resp.data.name,
+            category: resp.data.category,
+            phone: resp.data.phoneNumber,
+            price: resp.data.stempPrice,
+            code: resp.data.inviteCode,
+            description: resp.data.description,
+            location: resp.data.address,
+            lat: resp.data.lat,
+            lng: resp.data.lng,
+          });
+          const ref = firebase
+            .storage()
+            .ref("/restaurent_images/" + resp.data._id + ".jpg");
+          ref
+            .getDownloadURL()
+            .then((url) => {
+              this.setState({ oldImage: url });
+            })
+            .catch((err) => console.log(err));
+        }
+      });
   }
 
   _requestCameraPermission = async () => {
@@ -115,8 +121,6 @@ class Stamp extends React.Component {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
       this.setState({
         image: result.uri,
@@ -130,8 +134,6 @@ class Stamp extends React.Component {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
       this.setState({
         menu: result.uri,
@@ -139,26 +141,26 @@ class Stamp extends React.Component {
     }
   };
 
-  async uploadMenu(id){
-    const response = await fetch(
-      this.state.menu
-    );
+  async uploadMenu(id) {
+    const response = await fetch(this.state.menu);
     const blob1 = await response.blob();
     var ref = firebase
       .storage()
       .ref()
-      .child(
-        "menu_images/" +
-          id +
-          ".jpg"
-      );
+      .child("menu_images/" + id + ".jpg");
+    ref.put(blob1);
+  }
+  async uploadRest(id) {
+    const response = await fetch(this.state.image);
+    const blob1 = await response.blob();
+    var ref = firebase
+      .storage()
+      .ref()
+      .child("restaurent_images/" + id + ".jpg");
     return ref.put(blob1);
-                                  
-                                  
   }
 
   handleSubmission() {
-    console.log("SDDDDDDDDDDDDDDDDDD");
     this.setState({ loading: true }, () => {
       if (this.state.name.trim()) {
         if (this.state.category.trim()) {
@@ -169,7 +171,7 @@ class Stamp extends React.Component {
                   if (this.state.location) {
                     Geocoder.from(this.state.location)
                       .then((json) => {
-                        var location = json.results[0].geometry.location;                  
+                        var location = json.results[0].geometry.location;
 
                         axios
                           .get(
@@ -177,33 +179,26 @@ class Stamp extends React.Component {
                               this.state.code
                           )
                           .then((resp) => {
-                            console.log(resp.data);
                             if (resp.data !== null) {
-                              if(this.state.resData){
+                              if (this.state.resData) {
                                 axios
-                                .put(
-                                  "http://192.168.0.108:3000/edit/restaurant/"+this.state.id,
-                                  {
-                                    name: this.state.name,
-                                    category: this.state.category,
-                                    phoneNumber: this.state.phone,
-                                    stempPrice: this.state.price,
-                                    inviteCode: this.state.code,
-                                    description: this.state.description,
-                                    address: this.state.location,
-                                    userId: this.props.user.user._id,
-                                    lat: location.lat,
-                                    lng: location.lng,
-                                  }
-                                )
-                                .then(async (resp) => {
-                                  console.log(resp.data);
-                                  if(this.state.menu){
-                                    this.uploadMenu(resp.data.restaurent._id)
-
-                                  }
-
-                                  if(this.state.image){
+                                  .put(
+                                    "http://192.168.0.108:3000/edit/restaurant/" +
+                                      this.state.id,
+                                    {
+                                      name: this.state.name,
+                                      category: this.state.category,
+                                      phoneNumber: this.state.phone,
+                                      stempPrice: this.state.price,
+                                      inviteCode: this.state.code,
+                                      description: this.state.description,
+                                      address: this.state.location,
+                                      userId: this.props.user.user._id,
+                                      lat: location.lat,
+                                      lng: location.lng,
+                                    }
+                                  )
+                                  .then(async (resp) => {
                                     const response = await fetch(
                                       this.state.image
                                     );
@@ -216,80 +211,71 @@ class Stamp extends React.Component {
                                           resp.data.restaurent._id +
                                           ".jpg"
                                       );
-                                    return ref.put(blob);
-                                    
-                                  }
-                                
-                                  
-                                 
-                                })
-                                .catch((err) => console.log(err));
-                              this.setState({
-                                msg1: "Restaurent added Successfully",
-                                name: "",
-                                category: "",
-                                price: "",
-                                code: "",
-                                description: "",
-                                location: "",
-                                phone: "",
-                                image: ""
-                              });
+                                    alert(this.state.image);
+                                    ref.put(blob).then(() => {
+                                      this.uploadMenu(resp.data.restaurent._id);
+                                    });
+                                  })
 
-                              }else{
+                                  .catch((err) => console.log(err));
+                                this.setState({
+                                  msg1: "Restaurent added Successfully",
+                                  name: "",
+                                  category: "",
+                                  price: "",
+                                  code: "",
+                                  description: "",
+                                  location: "",
+                                  phone: "",
+                                });
+                              } else {
                                 axios
-                                .post(
-                                  "https://warm-plains-33254.herokuapp.com/add/restaurent",
-                                  {
-                                    name: this.state.name,
-                                    category: this.state.category,
-                                    phoneNumber: this.state.phone,
-                                    stempPrice: this.state.price,
-                                    inviteCode: this.state.code,
-                                    description: this.state.description,
-                                    address: this.state.location,
-                                    userId: this.props.user.user._id,
-                                    lat: location.lat,
-                                    lng: location.lng,
-                                  }
-                                )
-                                .then(async (resp) => {
-                                  console.log(resp.data);
-                                  this.uploadMenu(resp.data.restaurent._id)
-
-
-                                  const response = await fetch(
-                                    this.state.image
-                                  );
-                                  const blob = await response.blob();
-                                  var ref = firebase
-                                    .storage()
-                                    .ref()
-                                    .child(
-                                      "restaurent_images/" +
-                                        resp.data.restaurent._id +
-                                        ".jpg"
+                                  .post(
+                                    "https://warm-plains-33254.herokuapp.com/add/restaurent",
+                                    {
+                                      name: this.state.name,
+                                      category: this.state.category,
+                                      phoneNumber: this.state.phone,
+                                      stempPrice: this.state.price,
+                                      inviteCode: this.state.code,
+                                      description: this.state.description,
+                                      address: this.state.location,
+                                      userId: this.props.user.user._id,
+                                      lat: location.lat,
+                                      lng: location.lng,
+                                    }
+                                  )
+                                  .then(async (resp) => {
+                                    const response = await fetch(
+                                      this.state.image
                                     );
-                                  return ref.put(blob);
-                                  
-                                  
-                                 
-                                })
-                                .catch((err) => console.log(err));
-                              this.setState({
-                                msg1: "Restaurent added Successfully",
-                                name: "",
-                                category: "",
-                                price: "",
-                                code: "",
-                                description: "",
-                                location: "",
-                                phone: "",
-                                image: ""
-                              });
+                                    const blob = await response.blob();
+                                    var ref = firebase
+                                      .storage()
+                                      .ref()
+                                      .child(
+                                        "restaurent_images/" +
+                                          resp.data.restaurent._id +
+                                          ".jpg"
+                                      );
+                                    ref.put(blob).then(() => {
+                                      this.uploadMenu(resp.data.restaurent._id);
+                                    });
+                                  })
 
+                                  .catch((err) => console.log(err));
+                                this.setState({
+                                  msg1: "Restaurent added Successfully",
+                                  name: "",
+                                  category: "",
+                                  price: "",
+                                  code: "",
+                                  description: "",
+                                  location: "",
+                                  phone: "",
+                                });
                               }
-                         } else {
+                            } else {
                               this.setState({ msg: "Invalid Invite Code!" });
                             }
                           });
@@ -347,7 +333,6 @@ class Stamp extends React.Component {
     });
   }
   render() {
-    console.log("cr",this.state);
     var array = [1, 2, 3, 4, 5];
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
@@ -357,7 +342,7 @@ class Stamp extends React.Component {
           navigation={this.props.navigation}
         />
         {/* {this.state.resData ? ( */}
-          {/* <Text style={{textAlign: "center", fontWeight: "bold"}}>You have already created a restaurant</Text> */}
+        {/* <Text style={{textAlign: "center", fontWeight: "bold"}}>You have already created a restaurant</Text> */}
         {/* ): ( */}
         <ScrollView
           keyboardShouldPersistTaps="always"
@@ -366,7 +351,11 @@ class Stamp extends React.Component {
           {this.state.image || this.state.oldImage ? (
             <Image
               style={{ width: "100%", height: 200 }}
-              source={{ uri: this.state.oldImage ? this.state.oldImage: this.state.image }}
+              source={{
+                uri: this.state.oldImage
+                  ? this.state.oldImage
+                  : this.state.image,
+              }}
             />
           ) : (
             <TouchableOpacity onPress={() => this.pickImage()}>
@@ -679,7 +668,11 @@ class Stamp extends React.Component {
                   },
                 }}
                 listUnderlayColor="green"
-                placeholder={this.state.location ? this.state.location : "Search locations here"}
+                placeholder={
+                  this.state.location
+                    ? this.state.location
+                    : "Search locations here"
+                }
                 autoFocus={false}
                 returnKeyType={"default"}
                 fetchDetails={true}

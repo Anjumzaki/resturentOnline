@@ -29,7 +29,6 @@ class CustomDrawerContent extends Component {
     .storage()
     .ref("/profile_images/"+this.props.user.user._id+".jpg");
     ref.getDownloadURL().then(url => {
-        console.log("urllllll",url)
       this.setState({ image: url });
     }).catch(err => console.log(err));
   }

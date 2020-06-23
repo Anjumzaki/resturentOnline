@@ -60,7 +60,6 @@ class Map extends Component {
       ct = "",
       cnt = "",
       zipc = "";
-    console.log(" ins state", this.state.completeLoc);
     for (
       var i = 0;
       i < this.state.completeLoc.results[0].address_components.length;
@@ -197,7 +196,6 @@ class Map extends Component {
       .then((response) => response.json())
       .then((responseJson) => {
         const userLocation = responseJson.results[0].formatted_address;
-        console.log("result", responseJson.results[0].address_components);
         this.setState({
           userLocation: userLocation,
           regionChangeProgress: false,
@@ -221,7 +219,6 @@ class Map extends Component {
   onLocationSelect = () => alert(this.state.userLocation);
 
   render() {
-    console.log(this.state.completeLoc);
     if (this.state.loading) {
       return (
         <View style={styles.spinnerView}>

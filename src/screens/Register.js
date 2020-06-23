@@ -37,7 +37,6 @@ export default class Register extends React.Component {
   }
 
   handleSignUp() {
-    console.log("called");
     if (this.state.firstName) {
       if (this.state.lastName) {
         if (this.state.mobile) {
@@ -45,7 +44,6 @@ export default class Register extends React.Component {
             if (this.state.password) {
               if (this.state.userType) {
                 if(this.state.checked){
-                  console.log("Inn");
 
                   axios
                     .post(
@@ -60,7 +58,6 @@ export default class Register extends React.Component {
                       }
                     )
                     .then((resp) => {
-                      console.log("res", resp.data);
                       if (resp.data === "User already exists!") {
                         this.setState({ msg: "User already exists!" });
                       } else {
@@ -104,7 +101,6 @@ export default class Register extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     return (
       <SafeAreaView style={conStyles.safeAreaMy}>
         <StatusBar translucent={true} backgroundColor="transparent" />
